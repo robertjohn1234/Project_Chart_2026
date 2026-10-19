@@ -1,9 +1,11 @@
+
 {
   "name": "js",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,3 +18,4 @@
     "express": "^5.3.0"
   }
 }
+
