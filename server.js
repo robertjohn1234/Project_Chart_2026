@@ -163,6 +163,10 @@ app.get("/api/test", (req, res) => {
   });
 });
 
+app.get("/health", (req, res) => {
+  res.status(200).send("Express is healthy");
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Cable dashboard running on port ${PORT}`);
 });
