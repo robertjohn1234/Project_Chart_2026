@@ -1,60 +1,98 @@
-const fs = require("fs");
+
 const express = require("express");
 const ExcelJS = require("exceljs");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ========================================
+// CONFIGURATION
+// ========================================
 
 const EXCEL_FILE = path.join(
   __dirname,
   "Cable Percentage -.xlsx"
 );
+
 const SHEET_NAME = "Per week";
 
-// Serve Chart.js locally and the dashboard files.
+// ========================================
+// STATIC FILES
+// ========================================
+
+// Serve Chart.js locally
 app.use(
   "/vendor",
   express.static(
     path.join(__dirname, "node_modules", "chart.js", "dist")
   )
 );
+
+// Serve dashboard HTML and other public files
 app.use(express.static(path.join(__dirname, "public")));
 
-// Read the latest weekly cable installation data.
+// ========================================
+// HEALTH CHECK
+// ========================================
+
+app.get("/health", (req, res) => {
+  res.status(200).send("Express is healthy");
+});
+
+// ========================================
+// EXCEL API
+// ========================================
+
 app.get("/api/data", async (req, res) => {
+  console.log("------------------------------------");
+  console.log("API requested");
+  console.log("Excel file path:", EXCEL_FILE);
+  console.log("Excel file exists:", fs.existsSync(EXCEL_FILE));
+
   try {
-    console.log("API requested");
-console.log("Excel file path:", EXCEL_FILE);
-console.log("Excel file exists:", fs.existsSync(EXCEL_FILE));
+    // Read the Excel workbook
+    const workbook = new ExcelJS.Workbook();
 
-const workbook = new ExcelJS.Workbook();
+    console.log("Starting Excel workbook read...");
 
-console.log("Starting Excel workbook read...");
-await workbook.xlsx.readFile(EXCEL_FILE);
+    await workbook.xlsx.readFile(EXCEL_FILE);
 
-console.log("Excel workbook read successfully");
+    console.log("Excel workbook read successfully");
 
+    // Find the required worksheet
     const sheet = workbook.getWorksheet(SHEET_NAME);
 
     if (!sheet) {
+      console.error(`Worksheet "${SHEET_NAME}" was not found.`);
+
       return res.status(404).json({
         error: `Worksheet "${SHEET_NAME}" was not found.`
       });
     }
 
-    // Row 1 contains the reporting dates, starting in column C.
+    // ========================================
+    // READ REPORTING DATES
+    // ========================================
+
     const weeks = [];
 
     for (let col = 3; col <= sheet.columnCount; col++) {
       const value = sheet.getRow(1).getCell(col).value;
 
-      if (value instanceof Date && !isNaN(value.getTime())) {
+      if (
+        value instanceof Date &&
+        !isNaN(value.getTime())
+      ) {
         weeks.push({
           column: col,
           date: value.toISOString().slice(0, 10)
         });
-      } else if (typeof value === "string" && value.trim()) {
+      } else if (
+        typeof value === "string" &&
+        value.trim()
+      ) {
         const parsed = new Date(value);
 
         if (!isNaN(parsed.getTime())) {
@@ -67,54 +105,69 @@ console.log("Excel workbook read successfully");
     }
 
     if (weeks.length === 0) {
+      console.error("No reporting dates were found in row 1.");
+
       return res.status(400).json({
         error: "No reporting dates were found in row 1."
       });
     }
 
-    // Latest date is the rightmost valid date column.
     const latest = weeks[weeks.length - 1];
-    const previous = weeks.length > 1
-      ? weeks[weeks.length - 2]
-      : null;
+
+    const previous =
+      weeks.length > 1
+        ? weeks[weeks.length - 2]
+        : null;
+
+    // ========================================
+    // READ AREA PROGRESS
+    // ========================================
 
     const areas = [];
     let currentSection = "";
 
     for (let rowNum = 2; rowNum <= sheet.rowCount; rowNum++) {
       const row = sheet.getRow(rowNum);
+
       const sectionValue = row.getCell(1).text.trim();
       const areaName = row.getCell(2).text.trim();
 
-      // A section heading appears in column A.
       if (sectionValue) {
         currentSection = sectionValue;
       }
 
-      // Only include rows that have an area name in column B.
-      if (!areaName) continue;
+      if (!areaName) {
+        continue;
+      }
 
-      const progress = weeks.map(week => {
+      const progress = weeks.map((week) => {
         const cell = row.getCell(week.column);
         const value = cell.value;
 
-        if (value === null || value === undefined || value === "") {
+        if (
+          value === null ||
+          value === undefined ||
+          value === ""
+        ) {
           return null;
         }
 
-        // Excel percentage cells are normally stored as fractions.
         const numeric = Number(value);
 
-        if (!Number.isFinite(numeric)) return null;
+        if (!Number.isFinite(numeric)) {
+          return null;
+        }
 
-        // Also support numeric values entered as 25 to mean 25%.
+        // Convert percentages such as 75 to 0.75
         return numeric > 1 ? numeric / 100 : numeric;
       });
 
       const latestValue = progress[progress.length - 1];
-      const previousValue = progress.length > 1
-        ? progress[progress.length - 2]
-        : null;
+
+      const previousValue =
+        progress.length > 1
+          ? progress[progress.length - 2]
+          : null;
 
       areas.push({
         section: currentSection,
@@ -129,52 +182,73 @@ console.log("Excel workbook read successfully");
       });
     }
 
-    // Summarize each section using a simple average of its areas.
-    const sections = [...new Set(areas.map(item => item.section))];
+    // ========================================
+    // CALCULATE SECTION SUMMARY
+    // ========================================
 
-    const summary = sections.map(section => {
+    const sections = [
+      ...new Set(areas.map((item) => item.section))
+    ];
+
+    const summary = sections.map((section) => {
       const sectionAreas = areas.filter(
-        item => item.section === section
+        (item) => item.section === section
       );
 
       const valid = sectionAreas.filter(
-        item => item.latest !== null
+        (item) => item.latest !== null
       );
 
       const average = valid.length
-        ? valid.reduce((sum, item) => sum + item.latest, 0) / valid.length
+        ? valid.reduce(
+            (sum, item) => sum + item.latest,
+            0
+          ) / valid.length
         : null;
 
-      return { section, average };
+      return {
+        section,
+        average
+      };
     });
 
-    res.json({
+    // ========================================
+    // SEND DATA TO DASHBOARD
+    // ========================================
+
+    const responseData = {
       title: sheet.getCell("A1").text,
       latestDate: latest.date,
       previousDate: previous ? previous.date : null,
-      weeks: weeks.map(week => week.date),
+      weeks: weeks.map((week) => week.date),
       areas,
       summary
-    });
+    };
+
+    console.log("API processing successful");
+    console.log("Reporting dates:", weeks.length);
+    console.log("Areas found:", areas.length);
+    console.log("------------------------------------");
+
+    return res.status(200).json(responseData);
+
   } catch (error) {
-    console.error("Excel reading error:", error);
-    res.status(500).json({
-      error: "Unable to read the Excel workbook. Check the filename and close the workbook in Excel before retrying if needed."
+    console.error("EXCEL API ERROR:");
+    console.error(error.stack || error);
+
+    return res.status(500).json({
+      error: "Unable to process the Excel workbook.",
+      details: error.message
     });
   }
 });
 
-app.get("/api/test", (req, res) => {
-  res.json({
-    success: true,
-    message: "Express API is working on Render"
-  });
-});
-
-app.get("/health", (req, res) => {
-  res.status(200).send("Express is healthy");
-});
+// ========================================
+// START SERVER
+// ========================================
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Cable dashboard running on port ${PORT}`);
+  console.log("Excel file:", EXCEL_FILE);
+  console.log("Excel file exists:", fs.existsSync(EXCEL_FILE));
 });
