@@ -156,6 +156,13 @@ app.get("/api/data", async (req, res) => {
   }
 });
 
+app.get("/api/test", (req, res) => {
+  res.json({
+    success: true,
+    message: "Express API is working on Render"
+  });
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Cable dashboard running on port ${PORT}`);
 });
