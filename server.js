@@ -18,11 +18,15 @@ const EXCEL_FILE = path.join(
 
 const SHEET_NAME = "Per week";
 
+// Cached dashboard data
+let cachedData = null;
+let loadError = null;
+let isLoading = false;
+
 // ========================================
 // STATIC FILES
 // ========================================
 
-// Serve Chart.js locally
 app.use(
   "/vendor",
   express.static(
@@ -30,7 +34,6 @@ app.use(
   )
 );
 
-// Serve dashboard HTML and other public files
 app.use(express.static(path.join(__dirname, "public")));
 
 // ========================================
@@ -42,39 +45,42 @@ app.get("/health", (req, res) => {
 });
 
 // ========================================
-// EXCEL API
+// LOAD AND PROCESS EXCEL
 // ========================================
 
-app.get("/api/data", async (req, res) => {
-  console.log("------------------------------------");
-  console.log("API requested");
-  console.log("Excel file path:", EXCEL_FILE);
-  console.log("Excel file exists:", fs.existsSync(EXCEL_FILE));
+async function loadDashboardData() {
+  if (isLoading) {
+    console.log("Excel loading already in progress.");
+    return;
+  }
+
+  isLoading = true;
 
   try {
-    // Read the Excel workbook
-    const workbook = new ExcelJS.Workbook();
+    console.log("------------------------------------");
+    console.log("Loading Excel workbook...");
+    console.log("Excel file path:", EXCEL_FILE);
+    console.log("Excel file exists:", fs.existsSync(EXCEL_FILE));
 
-    console.log("Starting Excel workbook read...");
+    if (!fs.existsSync(EXCEL_FILE)) {
+      throw new Error(`Excel file not found: ${EXCEL_FILE}`);
+    }
+
+    const workbook = new ExcelJS.Workbook();
 
     await workbook.xlsx.readFile(EXCEL_FILE);
 
-    console.log("Excel workbook read successfully");
+    console.log("Excel workbook loaded successfully.");
 
-    // Find the required worksheet
     const sheet = workbook.getWorksheet(SHEET_NAME);
 
     if (!sheet) {
-      console.error(`Worksheet "${SHEET_NAME}" was not found.`);
-
-      return res.status(404).json({
-        error: `Worksheet "${SHEET_NAME}" was not found.`
-      });
+      throw new Error(`Worksheet "${SHEET_NAME}" was not found.`);
     }
 
-    // ========================================
-    // READ REPORTING DATES
-    // ========================================
+    // ------------------------------------
+    // REPORTING DATES
+    // ------------------------------------
 
     const weeks = [];
 
@@ -105,11 +111,7 @@ app.get("/api/data", async (req, res) => {
     }
 
     if (weeks.length === 0) {
-      console.error("No reporting dates were found in row 1.");
-
-      return res.status(400).json({
-        error: "No reporting dates were found in row 1."
-      });
+      throw new Error("No reporting dates were found in row 1.");
     }
 
     const latest = weeks[weeks.length - 1];
@@ -119,9 +121,9 @@ app.get("/api/data", async (req, res) => {
         ? weeks[weeks.length - 2]
         : null;
 
-    // ========================================
-    // READ AREA PROGRESS
-    // ========================================
+    // ------------------------------------
+    // AREA PROGRESS
+    // ------------------------------------
 
     const areas = [];
     let currentSection = "";
@@ -141,8 +143,7 @@ app.get("/api/data", async (req, res) => {
       }
 
       const progress = weeks.map((week) => {
-        const cell = row.getCell(week.column);
-        const value = cell.value;
+        const value = row.getCell(week.column).value;
 
         if (
           value === null ||
@@ -158,7 +159,7 @@ app.get("/api/data", async (req, res) => {
           return null;
         }
 
-        // Convert percentages such as 75 to 0.75
+        // Convert values such as 75 to 0.75
         return numeric > 1 ? numeric / 100 : numeric;
       });
 
@@ -182,9 +183,9 @@ app.get("/api/data", async (req, res) => {
       });
     }
 
-    // ========================================
-    // CALCULATE SECTION SUMMARY
-    // ========================================
+    // ------------------------------------
+    // SECTION SUMMARY
+    // ------------------------------------
 
     const sections = [
       ...new Set(areas.map((item) => item.section))
@@ -212,11 +213,8 @@ app.get("/api/data", async (req, res) => {
       };
     });
 
-    // ========================================
-    // SEND DATA TO DASHBOARD
-    // ========================================
-
-    const responseData = {
+    // Save the processed result in memory
+    cachedData = {
       title: sheet.getCell("A1").text,
       latestDate: latest.date,
       previousDate: previous ? previous.date : null,
@@ -225,22 +223,37 @@ app.get("/api/data", async (req, res) => {
       summary
     };
 
-    console.log("API processing successful");
+    loadError = null;
+
+    console.log("Dashboard data cached successfully.");
     console.log("Reporting dates:", weeks.length);
     console.log("Areas found:", areas.length);
     console.log("------------------------------------");
 
-    return res.status(200).json(responseData);
-
   } catch (error) {
-    console.error("EXCEL API ERROR:");
+    loadError = error.message;
+
+    console.error("EXCEL LOADING ERROR:");
     console.error(error.stack || error);
 
-    return res.status(500).json({
-      error: "Unable to process the Excel workbook.",
-      details: error.message
-    });
+  } finally {
+    isLoading = false;
   }
+}
+
+// ========================================
+// API: RETURN CACHED DATA
+// ========================================
+
+app.get("/api/data", (req, res) => {
+  if (cachedData) {
+    return res.status(200).json(cachedData);
+  }
+
+  return res.status(503).json({
+    error: "Dashboard data is not ready yet.",
+    details: loadError || "The Excel workbook is still loading."
+  });
 });
 
 // ========================================
@@ -250,5 +263,7 @@ app.get("/api/data", async (req, res) => {
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Cable dashboard running on port ${PORT}`);
   console.log("Excel file:", EXCEL_FILE);
-  console.log("Excel file exists:", fs.existsSync(EXCEL_FILE));
+
+  // Load the workbook only once at startup
+  loadDashboardData();
 });
