@@ -1,4 +1,4 @@
-
+const fs = require("fs");
 const express = require("express");
 const ExcelJS = require("exceljs");
 const path = require("path");
@@ -24,8 +24,16 @@ app.use(express.static(path.join(__dirname, "public")));
 // Read the latest weekly cable installation data.
 app.get("/api/data", async (req, res) => {
   try {
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(EXCEL_FILE);
+    console.log("API requested");
+console.log("Excel file path:", EXCEL_FILE);
+console.log("Excel file exists:", fs.existsSync(EXCEL_FILE));
+
+const workbook = new ExcelJS.Workbook();
+
+console.log("Starting Excel workbook read...");
+await workbook.xlsx.readFile(EXCEL_FILE);
+
+console.log("Excel workbook read successfully");
 
     const sheet = workbook.getWorksheet(SHEET_NAME);
 
