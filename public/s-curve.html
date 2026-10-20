@@ -131,7 +131,7 @@
     </section>
 
     <p id="status">Connecting to S-curve data...</p>
-    <footer class="footer">PH PERTAMA ISTC · Internal Project Dashboard</footer>
+    <footer class="footer">PH PERTAMA · Internal Project Dashboard</footer>
   </main>
 
 <script>
@@ -239,6 +239,41 @@
     return card;
   }
 
+  // Pace needed to finish on the plan's last week vs the recent pace (all in pp per week)
+  function paceInfo() {
+    const weeks = scurveData.weeks;
+    const li = scurveData.latestIndex;
+    const latest = weeks[li];
+    const key = w => w.year + "-" + w.week;   // a week can be split over two columns
+
+    // Weeks still left in the plan (not counting the rest of the latest week)
+    const left = new Set();
+    for (let i = li + 1; i < weeks.length; i++) {
+      if (key(weeks[i]) !== key(latest)) left.add(key(weeks[i]));
+    }
+    const weeksLeft = left.size;
+    const remainingPP = (1 - latest.actualCum) * 100;
+
+    // Recent pace: average progress over the last 4 reporting weeks
+    const seen = new Set();
+    let firstIncluded = li;
+    for (let i = li; i >= 0; i--) {
+      if (weeks[i].actualCum === null) break;
+      seen.add(key(weeks[i]));
+      if (seen.size > 4) break;
+      firstIncluded = i;
+    }
+    const used = Math.min(seen.size, 4);
+    let base = 0;
+    for (let i = firstIncluded - 1; i >= 0; i--) {
+      if (weeks[i].actualCum !== null) { base = weeks[i].actualCum; break; }
+    }
+    const recentPP = used > 0 ? ((latest.actualCum - base) * 100) / used : null;
+    const neededPP = weeksLeft > 0 ? remainingPP / weeksLeft : null;
+
+    return { weeksLeft, remainingPP, recentPP, neededPP, usedWeeks: used };
+  }
+
   function renderCards() {
     const container = document.getElementById("summaryCards");
     container.replaceChildren();
@@ -267,6 +302,30 @@
     badge.className = "badge " + status.css;
     badge.textContent = status.text;
     container.appendChild(makeCard("Status", badge, "Gap up to " + ON_TRACK_UP_TO + " pp counts as on track"));
+
+    // Pace card: needed vs recent
+    const pace = paceInfo();
+    const paceSpan = document.createElement("span");
+    let paceSub = "";
+    if (pace.remainingPP <= 0) {
+      paceSpan.textContent = "Complete";
+    } else if (pace.neededPP === null) {
+      paceSpan.textContent = pace.remainingPP.toFixed(1) + " pp left";
+      paceSub = "No weeks left in the plan";
+    } else {
+      paceSpan.textContent = pace.neededPP.toFixed(1) + " pp/week";
+      const recentText = pace.recentPP === null ? "—" : pace.recentPP.toFixed(1) + " pp/week";
+      paceSub = "Recent pace: " + recentText + " (avg last " + pace.usedWeeks + " weeks) · " +
+        pace.remainingPP.toFixed(1) + " pp left in " + pace.weeksLeft + " weeks";
+      if (pace.recentPP !== null && pace.recentPP > 0) {
+        const ratio = pace.neededPP / pace.recentPP;
+        paceSub += " · needs " + ratio.toFixed(1) + "× the recent pace";
+        paceSpan.className = ratio > 1 ? "gap-behind" : "gap-ahead";
+      } else {
+        paceSpan.className = "gap-behind";
+      }
+    }
+    container.appendChild(makeCard("Pace needed to finish on plan", paceSpan, paceSub));
   }
 
   function updateToggleLabels() {
