@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PH PERTAMA ISTC | S-Curve</title>
+  <meta name="description" content="PH PERTAMA internal project dashboard for the project S-curve: planned versus actual progress.">
+  <script src="/vendor/chart.umd.js"></script>
+
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    /* Styles used only on this page */
+    .scurve-chart { position: relative; height: 400px; }
+    .weekly-chart { position: relative; height: 230px; margin-top: 8px; }
+    .sub-heading { margin-top: 24px; }
+
+    .view-toggle { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 16px; }
+    .view-toggle button {
+      font: inherit;
+      padding: 6px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #0f172a;
+      cursor: pointer;
+    }
+    .view-toggle button[aria-pressed="true"] {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+
+    .card-sub { font-size: 12px; margin-top: 4px; opacity: 0.7; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .badge.ok   { background: #dcfce7; color: #166534; }
+    .badge.warn { background: #fef3c7; color: #92400e; }
+    .badge.bad  { background: #fee2e2; color: #991b1b; }
+    .badge.none { background: #e2e8f0; color: #334155; }
+
+    .gap-behind { color: #b91c1c; font-weight: 600; }
+    .gap-ahead  { color: #15803d; font-weight: 600; }
+
+    .scurve-table-wrap { max-height: 520px; overflow: auto; }
+    tr.current-row td { font-weight: 700; background: rgba(37, 99, 235, 0.08); }
+
+    @media (max-width: 640px) {
+      .scurve-chart { height: 320px; }
+      .weekly-chart { height: 200px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/" aria-label="PH PERTAMA dashboard home">
+        <img
+          class="brand-logo"
+          src="/images/phpertama-logo.jpg"
+          alt="PH PERTAMA logo"
+          onerror="this.style.display='none'"
+        >
+        <div class="brand-copy">
+          <div class="brand-name">PH PERTAMA ISTC</div>
+          <div class="brand-subtitle">Project Dashboard</div>
+        </div>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/#cable-status">Cable Status</a>
+        <a href="/s-curve.html" aria-current="page">S-Curve</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell" id="s-curve">
+    <div class="page-heading">
+      <div>
+        <h1>Project S-Curve</h1>
+        <p class="muted" id="reportDate">Loading reporting week...</p>
+      </div>
+      <button id="refreshButton" type="button">Refresh Data</button>
+    </div>
+
+    <section class="cards" id="summaryCards"></section>
+
+    <section class="panel">
+      <h2>Planned vs Actual Progress (cumulative)</h2>
+
+      <div class="view-toggle" role="group" aria-label="Choose the time range">
+        <button type="button" id="viewWindow" aria-pressed="true">Current baseline</button>
+        <button type="button" id="viewFull" aria-pressed="false">Full project</button>
+      </div>
+
+      <div class="scurve-chart">
+        <canvas id="scurveChart" role="img" aria-label="Line chart of cumulative planned and actual progress by week"></canvas>
+      </div>
+
+      <h2 class="sub-heading">Weekly Progress (planned vs actual)</h2>
+      <div class="weekly-chart">
+        <canvas id="weeklyChart" role="img" aria-label="Bar chart of planned and actual progress for each week"></canvas>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Weekly Detail</h2>
+      <p class="muted">Gap = Plan &minus; Actual, in percentage points (pp). Positive means behind plan.</p>
+      <div class="table-wrap scurve-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Week</th>
+              <th>Planned (week)</th>
+              <th>Actual (week)</th>
+              <th>Planned (cumulative)</th>
+              <th>Actual (cumulative)</th>
+              <th>Gap vs plan</th>
+            </tr>
+          </thead>
+          <tbody id="scurveTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <p id="status">Connecting to S-curve data...</p>
+    <footer class="footer">PH PERTAMA · Internal Project Dashboard</footer>
+  </main>
+
+<script>
+  // ---- Settings you can change ------------------------------------------
+  // Status label is based on the gap vs plan, in percentage points (pp)
+  const ON_TRACK_UP_TO = 2;        // gap up to 2 pp  -> "On track"
+  const SLIGHTLY_BEHIND_UP_TO = 5; // gap up to 5 pp  -> "Slightly behind", more -> "Behind"
+  // How often the page checks for new data (in minutes)
+  const CHECK_EVERY_MINUTES = 5;
+  // -----------------------------------------------------------------------
+
+  const COLORS = {
+    baseline1: "#94a3b8",
+    plan: "#2563eb",
+    actual: "#16a34a",
+    planBar: "#93c5fd",
+    actualBar: "#4ade80"
+  };
+
+  let scurveData = null;
+  let view = "window"; // "window" = current baseline, "full" = whole project
+  let scurveChart = null;
+  let weeklyChart = null;
+  let lastPayload = "";
+
+  const pct1 = value =>
+    value === null || value === undefined ? "—" : (value * 100).toFixed(1) + "%";
+  const pct2 = value =>
+    value === null || value === undefined ? "—" : (value * 100).toFixed(2) + "%";
+  const toPct = value =>
+    value === null || value === undefined ? null : value * 100;
+
+  function startIndex() {
+    return view === "window" ? scurveData.windowStart : 0;
+  }
+
+  function visibleWeeks() {
+    return scurveData.weeks.slice(startIndex());
+  }
+
+  // Draws a dashed vertical line at the latest reporting week
+  const latestWeekLine = {
+    id: "latestWeekLine",
+    afterDatasetsDraw(chart, args, options) {
+      if (options.index === null || options.index === undefined) return;
+      const { ctx, chartArea, scales } = chart;
+      const x = scales.x.getPixelForValue(options.index);
+
+      ctx.save();
+      ctx.setLineDash([5, 4]);
+      ctx.strokeStyle = "#64748b";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(x, chartArea.top);
+      ctx.lineTo(x, chartArea.bottom);
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.fillStyle = "#64748b";
+      ctx.font = "11px sans-serif";
+      ctx.textAlign = "center";
+      const labelX = Math.min(Math.max(x, chartArea.left + 45), chartArea.right - 45);
+      ctx.fillText(options.label || "", labelX, chartArea.top - 6);
+      ctx.restore();
+    }
+  };
+
+  function statusFor(gapPP) {
+    if (gapPP === null || gapPP === undefined) {
+      return { text: "No plan data", css: "none" };
+    }
+    if (gapPP <= 0) return { text: "Ahead of plan", css: "ok" };
+    if (gapPP <= ON_TRACK_UP_TO) return { text: "On track", css: "ok" };
+    if (gapPP <= SLIGHTLY_BEHIND_UP_TO) return { text: "Slightly behind", css: "warn" };
+    return { text: "Behind", css: "bad" };
+  }
+
+  function gapText(gapPP) {
+    if (gapPP === null || gapPP === undefined) return "—";
+    if (gapPP > 0) return gapPP.toFixed(1) + " pp behind";
+    if (gapPP < 0) return Math.abs(gapPP).toFixed(1) + " pp ahead";
+    return "0.0 pp (on plan)";
+  }
+
+  function makeCard(labelText, valueNode, subText) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const label = document.createElement("div");
+    label.className = "card-label";
+    label.textContent = labelText;
+
+    const value = document.createElement("div");
+    value.className = "card-value";
+    value.append(valueNode);
+
+    card.append(label, value);
+
+    if (subText) {
+      const sub = document.createElement("div");
+      sub.className = "card-sub";
+      sub.textContent = subText;
+      card.appendChild(sub);
+    }
+    return card;
+  }
+
+  function renderCards() {
+    const container = document.getElementById("summaryCards");
+    container.replaceChildren();
+
+    const latest = scurveData.weeks[scurveData.latestIndex];
+    const planName = latest.baseline2Cum !== null ? "Baseline #2" : "Baseline #1";
+
+    container.appendChild(
+      makeCard("Planned to date", document.createTextNode(pct1(latest.planCum)),
+        planName + " · " + latest.label)
+    );
+
+    container.appendChild(
+      makeCard("Actual to date", document.createTextNode(pct1(latest.actualCum)),
+        latest.label)
+    );
+
+    const gapSpan = document.createElement("span");
+    gapSpan.textContent = gapText(latest.gapPP);
+    if (latest.gapPP > 0) gapSpan.className = "gap-behind";
+    else if (latest.gapPP < 0) gapSpan.className = "gap-ahead";
+    container.appendChild(makeCard("Gap vs plan", gapSpan, "Plan − Actual"));
+
+    const status = statusFor(latest.gapPP);
+    const badge = document.createElement("span");
+    badge.className = "badge " + status.css;
+    badge.textContent = status.text;
+    container.appendChild(makeCard("Status", badge, "Gap up to " + ON_TRACK_UP_TO + " pp counts as on track"));
+  }
+
+  function updateToggleLabels() {
+    const weeks = scurveData.weeks;
+    const first = weeks[scurveData.windowStart];
+    const last = weeks[weeks.length - 1];
+    const short = w => w.month.slice(0, 3) + " " + w.year;
+
+    document.getElementById("viewWindow").textContent =
+      "Current baseline (" + short(first) + " – " + short(last) + ")";
+    document.getElementById("viewFull").textContent = "Full project";
+
+    document.getElementById("viewWindow").setAttribute("aria-pressed", String(view === "window"));
+    document.getElementById("viewFull").setAttribute("aria-pressed", String(view === "full"));
+  }
+
+  function renderScurveChart() {
+    const weeks = visibleWeeks();
+    const latestIdx = scurveData.latestIndex - startIndex();
+    const latest = scurveData.weeks[scurveData.latestIndex];
+    const showPoints = view === "window";
+
+    const datasets = [];
+
+    if (view === "full") {
+      datasets.push({
+        label: "Baseline #1 (original plan)",
+        data: weeks.map(w => toPct(w.baseline1Cum)),
+        borderColor: COLORS.baseline1,
+        backgroundColor: COLORS.baseline1,
+        borderDash: [6, 4],
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.2,
+        spanGaps: false
+      });
+    }
+
+    datasets.push({
+      label: "Baseline #2 (current plan)",
+      data: weeks.map(w => toPct(w.baseline2Cum)),
+      borderColor: COLORS.plan,
+      backgroundColor: COLORS.plan,
+      borderDash: [6, 4],
+      borderWidth: 3,
+      pointRadius: showPoints ? 3 : 0,
+      tension: 0.2,
+      spanGaps: false
+    });
+
+    datasets.push({
+      label: "Actual",
+      data: weeks.map(w => toPct(w.actualCum)),
+      borderColor: COLORS.actual,
+      backgroundColor: COLORS.actual,
+      borderWidth: 3,
+      pointRadius: showPoints ? 3 : 0,
+      tension: 0.2,
+      spanGaps: false
+    });
+
+    if (scurveChart) scurveChart.destroy();
+
+    scurveChart = new Chart(document.getElementById("scurveChart"), {
+      type: "line",
+      data: { labels: weeks.map(w => w.label), datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 20 } },
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { position: "bottom" },
+          latestWeekLine: { index: latestIdx, label: "Latest: " + latest.label },
+          tooltip: {
+            callbacks: {
+              title: items => weeks[items[0].dataIndex].title,
+              label: context =>
+                context.dataset.label + ": " + context.parsed.y.toFixed(1) + "%",
+              afterBody: items => {
+                const w = weeks[items[0].dataIndex];
+                return w.gapPP === null ? "" : "Gap vs plan: " + gapText(w.gapPP);
+              }
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { maxRotation: 60, autoSkip: true } },
+          y: {
+            min: 0,
+            max: 100,
+            ticks: { callback: value => value + "%" }
+          }
+        }
+      },
+      plugins: [latestWeekLine]
+    });
+  }
+
+  function renderWeeklyChart() {
+    const weeks = visibleWeeks();
+    const latestIdx = scurveData.latestIndex - startIndex();
+    const latest = scurveData.weeks[scurveData.latestIndex];
+
+    if (weeklyChart) weeklyChart.destroy();
+
+    weeklyChart = new Chart(document.getElementById("weeklyChart"), {
+      type: "bar",
+      data: {
+        labels: weeks.map(w => w.label),
+        datasets: [
+          {
+            label: "Planned (week)",
+            data: weeks.map(w => toPct(w.planWeekly)),
+            backgroundColor: COLORS.planBar,
+            borderRadius: 3
+          },
+          {
+            label: "Actual (week)",
+            data: weeks.map(w => toPct(w.actualWeekly)),
+            backgroundColor: COLORS.actualBar,
+            borderRadius: 3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        layout: { padding: { top: 20 } },
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { position: "bottom" },
+          latestWeekLine: { index: latestIdx, label: "Latest: " + latest.label },
+          tooltip: {
+            callbacks: {
+              title: items => weeks[items[0].dataIndex].title,
+              label: context =>
+                context.dataset.label + ": " +
+                (context.parsed.y === null ? "—" : context.parsed.y.toFixed(2) + "%")
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { maxRotation: 60, autoSkip: true } },
+          y: {
+            beginAtZero: true,
+            ticks: { callback: value => value + "%" }
+          }
+        }
+      },
+      plugins: [latestWeekLine]
+    });
+  }
+
+  function renderTable() {
+    const weeks = visibleWeeks();
+    const latestIdx = scurveData.latestIndex - startIndex();
+    const body = document.getElementById("scurveTable");
+    body.replaceChildren();
+
+    weeks.forEach((w, i) => {
+      const row = body.insertRow();
+      if (i === latestIdx) row.className = "current-row";
+
+      row.insertCell().textContent = w.label + " " + w.year;
+      row.insertCell().textContent = pct2(w.planWeekly);
+      row.insertCell().textContent = pct2(w.actualWeekly);
+      row.insertCell().textContent = pct1(w.planCum);
+      row.insertCell().textContent = pct1(w.actualCum);
+
+      const gapCell = row.insertCell();
+      gapCell.textContent = gapText(w.gapPP);
+      if (w.gapPP > 0) gapCell.className = "gap-behind";
+      else if (w.gapPP < 0) gapCell.className = "gap-ahead";
+    });
+  }
+
+  function renderAll() {
+    const latest = scurveData.weeks[scurveData.latestIndex];
+    document.getElementById("reportDate").textContent =
+      "Latest reporting week: " + latest.title;
+
+    updateToggleLabels();
+    renderCards();
+    renderScurveChart();
+    renderWeeklyChart();
+    renderTable();
+  }
+
+  // manual = true when the person clicks "Refresh Data"
+  async function refreshScurve(manual = false) {
+    const status = document.getElementById("status");
+
+    try {
+      if (manual === true) status.textContent = "Loading S-curve data...";
+
+      const response = await fetch("/api/scurve", { cache: "no-store" });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to load S-curve data.");
+      }
+
+      // Only redraw when the data really changed (or on manual refresh)
+      const payload = JSON.stringify(data);
+      if (manual === true || payload !== lastPayload) {
+        lastPayload = payload;
+        scurveData = data;
+        renderAll();
+      }
+
+      status.textContent =
+        "Connected | Last checked: " + new Date().toLocaleTimeString();
+    } catch (error) {
+      status.textContent = "Error: " + error.message;
+    }
+  }
+
+  document.getElementById("refreshButton")
+    .addEventListener("click", () => refreshScurve(true));
+
+  document.getElementById("viewWindow").addEventListener("click", () => {
+    view = "window";
+    if (scurveData) renderAll();
+  });
+
+  document.getElementById("viewFull").addEventListener("click", () => {
+    view = "full";
+    if (scurveData) renderAll();
+  });
+
+  refreshScurve();
+
+  // Check for new data periodically, but not while the tab is hidden
+  setInterval(() => {
+    if (!document.hidden) refreshScurve();
+  }, CHECK_EVERY_MINUTES * 60 * 1000);
+</script>
+</body>
+</html>
