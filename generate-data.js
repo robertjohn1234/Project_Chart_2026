@@ -2,6 +2,7 @@ const ExcelJS = require("exceljs");
 const fs = require("fs");
 const path = require("path");
 const { generateScurve } = require("./generate-scurve");
+const { generateDaily } = require("./generate-daily");
 
 const EXCEL_FILE = path.join(__dirname, "Cable Percentage -.xlsx");
 const OUTPUT_FILE = path.join(__dirname, "dashboard-data.json");
@@ -145,6 +146,10 @@ async function main() {
   // Also convert the S-curve workbook (see generate-scurve.js)
   console.log("");
   await generateScurve();
+
+  // And the daily activities report (skipped if the Excel file is not there)
+  console.log("");
+  await generateDaily();
 }
 
 main().catch(error => {

@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PH PERTAMA ISTC | Daily Activities</title>
+  <meta name="description" content="PH PERTAMA internal project dashboard for daily activities by supervisor: progress, on-hold items and reasons.">
+  <script src="/vendor/chart.umd.js"></script>
+
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    /* Styles used only on this page */
+    .supervisor-chart { position: relative; }
+    .trend-chart { position: relative; height: 260px; }
+
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 16px; }
+    .filter-bar button {
+      font: inherit;
+      padding: 6px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #ffffff;
+      color: #0f172a;
+      cursor: pointer;
+    }
+    .filter-bar button[aria-pressed="true"] {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+
+    .card-sub { font-size: 12px; margin-top: 4px; opacity: 0.7; }
+    .v-done { color: #15803d; }
+    .v-hold { color: #a16207; }
+
+    .age-note { font-weight: 600; }
+    .age-note.fresh { color: #15803d; }
+    .age-note.old { color: #b91c1c; }
+
+    .sv-block { margin-top: 20px; }
+    .sv-block h3 { margin: 0 0 4px; }
+    .sv-meta { font-size: 13px; font-weight: 400; opacity: 0.75; margin-left: 8px; }
+
+    .badge {
+      display: inline-block;
+      padding: 1px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .badge.done        { background: #dcfce7; color: #166534; }
+    .badge.progress    { background: #dbeafe; color: #1e40af; }
+    .badge.hold        { background: #fef3c7; color: #92400e; }
+    .badge.pending     { background: #e2e8f0; color: #334155; }
+    .badge.not-started { background: #f1f5f9; color: #475569; }
+
+    tr.row-hold td { background: rgba(234, 179, 8, 0.16); }
+    tr.row-done td { background: rgba(22, 163, 74, 0.14); }
+
+    .pbar {
+      position: relative;
+      min-width: 100px;
+      height: 20px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+    .pfill { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 4px; }
+    .pfill.done     { background: #86efac; }
+    .pfill.progress { background: #93c5fd; }
+    .pfill.hold     { background: #fde047; }
+    .pfill.pending, .pfill.not-started { background: #cbd5e1; }
+    .plabel {
+      position: relative;
+      padding-left: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 20px;
+      color: #0f172a;
+    }
+
+    .empty-note { margin: 8px 0; }
+
+    @media (max-width: 640px) {
+      .trend-chart { height: 220px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/" aria-label="PH PERTAMA dashboard home">
+        <img
+          class="brand-logo"
+          src="/images/phpertama-logo.jpg"
+          alt="PH PERTAMA logo"
+          onerror="this.style.display='none'"
+        >
+        <div class="brand-copy">
+          <div class="brand-name">PH PERTAMA ISTC</div>
+          <div class="brand-subtitle">Project Dashboard</div>
+        </div>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/#cable-status">Cable Status</a>
+        <a href="/s-curve.html">S-Curve</a>
+        <a href="/daily.html" aria-current="page">Daily Activities</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell" id="daily-activities">
+    <div class="page-heading">
+      <div>
+        <h1>Daily Activities</h1>
+        <p class="muted" id="reportDate">Loading report date...</p>
+      </div>
+      <button id="refreshButton" type="button">Refresh Data</button>
+    </div>
+
+    <section class="cards" id="summaryCards"></section>
+
+    <section class="panel">
+      <h2>Activities by Supervisor</h2>
+      <div class="supervisor-chart" id="supervisorChartWrap">
+        <canvas id="supervisorChart" role="img" aria-label="Stacked bar chart of activities by supervisor and status"></canvas>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>On Hold &amp; Reasons</h2>
+      <div id="holdSection"></div>
+    </section>
+
+    <section class="panel">
+      <h2>All Activities</h2>
+      <div class="filter-bar" id="filterBar" role="group" aria-label="Filter activities by status"></div>
+      <div id="supervisorBlocks"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Daily Trend</h2>
+      <p class="muted" id="trendNote"></p>
+      <div class="trend-chart" id="trendWrap">
+        <canvas id="trendChart" role="img" aria-label="Line chart of daily counts of done, in progress and on hold activities"></canvas>
+      </div>
+    </section>
+
+    <p id="status">Connecting to daily activities data...</p>
+    <footer class="footer">PH PERTAMA · Internal Project Dashboard</footer>
+  </main>
+
+<script>
+  // ---- Settings you can change ------------------------------------------
+  // How often the page checks for new data (in minutes)
+  const CHECK_EVERY_MINUTES = 5;
+  // How many days to show in the trend chart
+  const TREND_DAYS = 30;
+  // -----------------------------------------------------------------------
+
+  const STATE_LABELS = {
+    "done": "Done",
+    "progress": "In progress",
+    "hold": "On hold",
+    "pending": "Pending",
+    "not-started": "Not started"
+  };
+
+  const STATE_COLORS = {
+    "done": "#16a34a",
+    "progress": "#2563eb",
+    "hold": "#eab308",
+    "pending": "#94a3b8",
+    "not-started": "#cbd5e1"
+  };
+
+  const STATE_ORDER = ["done", "progress", "hold", "pending", "not-started"];
+
+  let dailyData = null;
+  let historyData = null;
+  let filter = "all";
+  let supervisorChart = null;
+  let trendChart = null;
+  let lastPayload = "";
+
+  const pct0 = value =>
+    value === null || value === undefined ? "—" : Math.round(value * 100) + "%";
+  const pct1 = value =>
+    value === null || value === undefined ? "—" : (value * 100).toFixed(1) + "%";
+
+  // Small helper to build an element
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function parseDate(value) {
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  function allItems() {
+    return dailyData.supervisors.flatMap(sv => sv.items);
+  }
+
+  // ---------- Summary cards ----------
+  function addCard(container, labelText, valueText, subText, valueClass) {
+    const card = el("div", "card");
+    card.appendChild(el("div", "card-label", labelText));
+    card.appendChild(el("div", "card-value" + (valueClass ? " " + valueClass : ""), valueText));
+    if (subText) card.appendChild(el("div", "card-sub", subText));
+    container.appendChild(card);
+  }
+
+  function renderCards() {
+    const container = document.getElementById("summaryCards");
+    container.replaceChildren();
+    const s = dailyData.summary;
+
+    addCard(container, "Total activities", String(s.total),
+      dailyData.supervisors.length + (dailyData.supervisors.length === 1 ? " supervisor" : " supervisors"));
+    addCard(container, "In progress", String(s.progress));
+    addCard(container, "On hold", String(s.hold), null, "v-hold");
+    addCard(container, "Done", String(s.done), "Shown until the next update", "v-done");
+    addCard(container, "Average progress", pct1(s.avgPercent), "All activities in the report");
+
+    const waiting = s.pending + s["not-started"];
+    if (waiting > 0) {
+      addCard(container, "Not started / pending", String(waiting));
+    }
+  }
+
+  // ---------- Report date + age ----------
+  function renderReportDate() {
+    const date = parseDate(dailyData.reportDate);
+    const text = date.toLocaleDateString(undefined, {
+      weekday: "short", year: "numeric", month: "short", day: "numeric"
+    });
+
+    const today = new Date();
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const days = Math.round((startOfToday - date) / 86400000);
+
+    const target = document.getElementById("reportDate");
+    target.replaceChildren();
+    target.append("Report date: " + text + " ");
+
+    let note;
+    if (days <= 0) {
+      note = el("span", "age-note fresh", "(today)");
+    } else if (days === 1) {
+      note = el("span", "age-note old", "(1 day old)");
+    } else {
+      note = el("span", "age-note old", "(" + days + " days old)");
+    }
+    target.appendChild(note);
+  }
+
+  // ---------- Chart: activities per supervisor ----------
+  function renderSupervisorChart() {
+    const svs = dailyData.supervisors;
+
+    document.getElementById("supervisorChartWrap").style.height =
+      Math.max(160, svs.length * 56 + 90) + "px";
+
+    const datasets = STATE_ORDER
+      .filter(state => svs.some(sv => sv[state] > 0))
+      .map(state => ({
+        label: STATE_LABELS[state],
+        data: svs.map(sv => sv[state]),
+        backgroundColor: STATE_COLORS[state],
+        borderRadius: 3
+      }));
+
+    if (supervisorChart) supervisorChart.destroy();
+
+    supervisorChart = new Chart(document.getElementById("supervisorChart"), {
+      type: "bar",
+      data: { labels: svs.map(sv => sv.name), datasets },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "bottom" },
+          tooltip: {
+            callbacks: {
+              label: context => context.dataset.label + ": " + context.parsed.x
+            }
+          }
+        },
+        scales: {
+          x: { stacked: true, beginAtZero: true, ticks: { precision: 0, stepSize: 1 } },
+          y: { stacked: true }
+        }
+      }
+    });
+  }
+
+  // ---------- Table helpers ----------
+  function progressCell(item) {
+    const cell = document.createElement("td");
+    if (item.percent === null) {
+      cell.textContent = "—";
+      return cell;
+    }
+    const bar = el("div", "pbar");
+    const fill = el("div", "pfill " + item.state);
+    fill.style.width = Math.max(0, Math.min(100, item.percent * 100)) + "%";
+    bar.appendChild(fill);
+    bar.appendChild(el("div", "plabel", pct0(item.percent)));
+    cell.appendChild(bar);
+    return cell;
+  }
+
+  function statusCell(item) {
+    const cell = document.createElement("td");
+    cell.appendChild(el("span", "badge " + item.state, STATE_LABELS[item.state] || item.state));
+    return cell;
+  }
+
+  function textCell(text) {
+    const cell = document.createElement("td");
+    cell.textContent = text;
+    return cell;
+  }
+
+  function rowClass(item) {
+    if (item.state === "hold") return "row-hold";
+    if (item.state === "done") return "row-done";
+    return "";
+  }
+
+  // ---------- On hold & reasons ----------
+  function renderHold() {
+    const section = document.getElementById("holdSection");
+    section.replaceChildren();
+
+    const held = [];
+    dailyData.supervisors.forEach(sv => {
+      sv.items.forEach(item => {
+        if (item.state === "hold") held.push({ supervisor: sv.name, item });
+      });
+    });
+
+    if (!held.length) {
+      section.appendChild(el("p", "muted empty-note", "No activities are on hold in this report."));
+      return;
+    }
+
+    const wrap = el("div", "table-wrap");
+    const table = document.createElement("table");
+    const head = table.createTHead().insertRow();
+    ["Supervisor", "Activity", "Progress", "Reason"].forEach(name => {
+      head.appendChild(el("th", "", name));
+    });
+
+    const body = table.createTBody();
+    held.forEach(({ supervisor, item }) => {
+      const row = body.insertRow();
+      row.className = "row-hold";
+      row.appendChild(textCell(supervisor));
+      row.appendChild(textCell(item.action));
+      row.appendChild(progressCell(item));
+      row.appendChild(textCell(item.reason || item.notes || "—"));
+    });
+
+    wrap.appendChild(table);
+    section.appendChild(wrap);
+  }
+
+  // ---------- Filters + per-supervisor tables ----------
+  function renderFilters() {
+    const bar = document.getElementById("filterBar");
+    bar.replaceChildren();
+    const items = allItems();
+
+    const options = [{ key: "all", label: "All (" + items.length + ")" }];
+    STATE_ORDER.forEach(state => {
+      const count = items.filter(i => i.state === state).length;
+      if (count > 0) options.push({ key: state, label: STATE_LABELS[state] + " (" + count + ")" });
+    });
+
+    // If the chosen filter no longer exists (new data), go back to "All"
+    if (!options.some(o => o.key === filter)) filter = "all";
+
+    options.forEach(option => {
+      const button = el("button", "", option.label);
+      button.type = "button";
+      button.setAttribute("aria-pressed", String(option.key === filter));
+      button.addEventListener("click", () => {
+        filter = option.key;
+        renderFilters();
+        renderBlocks();
+      });
+      bar.appendChild(button);
+    });
+  }
+
+  function renderBlocks() {
+    const container = document.getElementById("supervisorBlocks");
+    container.replaceChildren();
+    let shown = 0;
+
+    dailyData.supervisors.forEach(sv => {
+      const items = sv.items.filter(i => filter === "all" || i.state === filter);
+      if (!items.length) return;
+      shown += items.length;
+
+      const block = el("div", "sv-block");
+      const title = el("h3", "", sv.name);
+      title.appendChild(el(
+        "span", "sv-meta",
+        sv.total + (sv.total === 1 ? " activity" : " activities") +
+        " · average " + pct1(sv.avgPercent) +
+        (sv.hold ? " · " + sv.hold + " on hold" : "") +
+        (sv.done ? " · " + sv.done + " done" : "")
+      ));
+      block.appendChild(title);
+
+      const wrap = el("div", "table-wrap");
+      const table = document.createElement("table");
+      const head = table.createTHead().insertRow();
+      ["Activity", "Progress", "Status", "Notes"].forEach(name => {
+        head.appendChild(el("th", "", name));
+      });
+
+      const body = table.createTBody();
+      items.forEach(item => {
+        const row = body.insertRow();
+        row.className = rowClass(item);
+        row.appendChild(textCell(item.action));
+        row.appendChild(progressCell(item));
+        row.appendChild(statusCell(item));
+        row.appendChild(textCell(item.notes || "—"));
+      });
+
+      wrap.appendChild(table);
+      block.appendChild(wrap);
+      container.appendChild(block);
+    });
+
+    if (!shown) {
+      container.appendChild(el("p", "muted empty-note", "No activities to show."));
+    }
+  }
+
+  // ---------- Daily trend (from saved history) ----------
+  function renderTrend() {
+    const note = document.getElementById("trendNote");
+    const wrap = document.getElementById("trendWrap");
+
+    if (trendChart) {
+      trendChart.destroy();
+      trendChart = null;
+    }
+
+    const days = historyData && Array.isArray(historyData.days)
+      ? historyData.days.slice(-TREND_DAYS)
+      : [];
+
+    if (days.length < 2) {
+      wrap.style.display = "none";
+      note.textContent =
+        "The trend appears after at least 2 days of reports. Each update saves that day automatically" +
+        " (days saved so far: " + days.length + ").";
+      return;
+    }
+
+    wrap.style.display = "";
+    note.textContent =
+      "Counts from each day's report. Finished activities are removed from the Excel the next day, " +
+      "so Done shows what was finished on that report day.";
+
+    const labels = days.map(d => {
+      const date = parseDate(d.date);
+      return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    });
+
+    const datasets = ["done", "progress", "hold"].map(state => ({
+      label: STATE_LABELS[state],
+      data: days.map(d => d[state]),
+      borderColor: STATE_COLORS[state],
+      backgroundColor: STATE_COLORS[state],
+      borderWidth: 3,
+      pointRadius: 3,
+      tension: 0.2
+    }));
+
+    trendChart = new Chart(document.getElementById("trendChart"), {
+      type: "line",
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: { legend: { position: "bottom" } },
+        scales: {
+          y: { beginAtZero: true, ticks: { precision: 0, stepSize: 1 } }
+        }
+      }
+    });
+  }
+
+  function renderAll() {
+    renderReportDate();
+    renderCards();
+    renderSupervisorChart();
+    renderHold();
+    renderFilters();
+    renderBlocks();
+  }
+
+  // The history is optional: if it cannot be loaded, the rest of the page still works
+  async function loadHistory() {
+    try {
+      const response = await fetch("/api/daily-history", { cache: "no-store" });
+      historyData = response.ok ? await response.json() : null;
+    } catch (error) {
+      historyData = null;
+    }
+    renderTrend();
+  }
+
+  // manual = true when the person clicks "Refresh Data"
+  async function refreshDaily(manual = false) {
+    const status = document.getElementById("status");
+
+    try {
+      if (manual === true) status.textContent = "Loading daily activities...";
+
+      const response = await fetch("/api/daily", { cache: "no-store" });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to load daily activities.");
+      }
+
+      // Only redraw when the data really changed (or on manual refresh)
+      const payload = JSON.stringify(data);
+      if (manual === true || payload !== lastPayload) {
+        lastPayload = payload;
+        dailyData = data;
+        renderAll();
+        await loadHistory();
+      } else {
+        // Same data, but the "days old" note can change at midnight
+        renderReportDate();
+      }
+
+      status.textContent =
+        "Connected | Last checked: " + new Date().toLocaleTimeString();
+    } catch (error) {
+      status.textContent = "Error: " + error.message;
+    }
+  }
+
+  document.getElementById("refreshButton")
+    .addEventListener("click", () => refreshDaily(true));
+
+  refreshDaily();
+
+  // Check for new data periodically, but not while the tab is hidden
+  setInterval(() => {
+    if (!document.hidden) refreshDaily();
+  }, CHECK_EVERY_MINUTES * 60 * 1000);
+</script>
+</body>
+</html>

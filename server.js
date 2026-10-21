@@ -7,6 +7,8 @@ const PORT = process.env.PORT || 3000;
 
 const DATA_FILE = path.join(__dirname, "dashboard-data.json");
 const SCURVE_FILE = path.join(__dirname, "scurve-data.json");
+const DAILY_FILE = path.join(__dirname, "daily-data.json");
+const DAILY_HISTORY_FILE = path.join(__dirname, "daily-history.json");
 
 // Serves Chart.js to the browser at /vendor/chart.umd.js
 app.use(
@@ -50,8 +52,13 @@ app.get("/api/data", (req, res) => sendJsonFile(res, DATA_FILE));
 // S-curve data
 app.get("/api/scurve", (req, res) => sendJsonFile(res, SCURVE_FILE));
 
+// Daily activities (today's report) and the saved day-by-day history
+app.get("/api/daily", (req, res) => sendJsonFile(res, DAILY_FILE));
+app.get("/api/daily-history", (req, res) => sendJsonFile(res, DAILY_HISTORY_FILE));
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Cable dashboard running on port ${PORT}`);
   console.log("Dashboard JSON exists:", fs.existsSync(DATA_FILE));
   console.log("S-curve JSON exists:", fs.existsSync(SCURVE_FILE));
+  console.log("Daily JSON exists:", fs.existsSync(DAILY_FILE));
 });
