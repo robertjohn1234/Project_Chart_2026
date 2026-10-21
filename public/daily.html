@@ -40,6 +40,13 @@
 
     .sv-block { margin-top: 20px; }
     .sv-block h3 { margin: 0 0 4px; }
+    /* Same column widths in every supervisor table, so the headers line up */
+    .sv-block table { table-layout: fixed; width: 100%; min-width: 640px; }
+    .sv-block th, .sv-block td { overflow-wrap: anywhere; }
+    .sv-block th:nth-child(1) { width: 42%; }
+    .sv-block th:nth-child(2) { width: 18%; }
+    .sv-block th:nth-child(3) { width: 14%; }
+    .sv-block th:nth-child(4) { width: 26%; }
     .sv-meta { font-size: 13px; font-weight: 400; opacity: 0.75; margin-left: 8px; }
 
     .badge {
@@ -106,7 +113,7 @@
       </a>
       <nav class="main-nav" aria-label="Main navigation">
         <a href="/">Home</a>
-        <a href="/">Cable Status</a>
+        <a href="/#cable-status">Cable Status</a>
         <a href="/s-curve.html">S-Curve</a>
         <a href="/daily.html" aria-current="page">Daily Activities</a>
       </nav>
