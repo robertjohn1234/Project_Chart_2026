@@ -56,19 +56,46 @@ app.get("/api/scurve", (req, res) => sendJsonFile(res, SCURVE_FILE));
 app.get("/api/daily", (req, res) => sendJsonFile(res, DAILY_FILE));
 app.get("/api/daily-history", (req, res) => sendJsonFile(res, DAILY_HISTORY_FILE));
 
-// Bulletin board: lists the images in public/images/bulletin (the file name becomes the caption)
+// Bulletin board: every sub-folder of public/images/bulletin is a tab, e.g. "Electrical Team".
+// Images placed directly in the bulletin folder go into a "General" tab.
+// File and folder names become the captions and tab names (a leading number like "01_" only sets the order).
 const BULLETIN_DIR = path.join(__dirname, "public", "images", "bulletin");
-app.get("/api/bulletin", (req, res) => {
-  let files = [];
+const IMAGE_RE = /\.(jpe?g|png|webp|gif|avif)$/i;
+const natural = (a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+const prettyName = n => n.replace(/^\d{1,3}[\s_.-]+/, "").replace(/_+/g, " ").replace(/\s+/g, " ").trim();
+
+function listImages(dir) {
   try {
-    files = fs.readdirSync(BULLETIN_DIR).filter(f => /\.(jpe?g|png|webp|gif|avif)$/i.test(f));
+    return fs.readdirSync(dir).filter(f => IMAGE_RE.test(f)).sort(natural);
   } catch (error) {
-    files = [];
+    return [];
   }
-  files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
-  const pretty = f =>
-    path.parse(f).name.replace(/^\d{1,3}[\s_.-]+/, "").replace(/_+/g, " ").replace(/\s+/g, " ").trim() || f;
-  res.set("Cache-Control", "no-cache").json(files.map(file => ({ file, name: pretty(file) })));
+}
+
+app.get("/api/bulletin", (req, res) => {
+  const slidesFor = (files, folder) =>
+    files.map(f => ({
+      src: "/images/bulletin/" + (folder ? encodeURIComponent(folder) + "/" : "") + encodeURIComponent(f),
+      name: prettyName(path.parse(f).name) || f
+    }));
+
+  const groups = [];
+  const rootFiles = listImages(BULLETIN_DIR);
+  if (rootFiles.length) groups.push({ name: "General", slides: slidesFor(rootFiles, "") });
+
+  let folders = [];
+  try {
+    folders = fs.readdirSync(BULLETIN_DIR, { withFileTypes: true })
+      .filter(d => d.isDirectory()).map(d => d.name).sort(natural);
+  } catch (error) {
+    folders = [];
+  }
+  folders.forEach(folder => {
+    const files = listImages(path.join(BULLETIN_DIR, folder));
+    if (files.length) groups.push({ name: prettyName(folder) || folder, slides: slidesFor(files, folder) });
+  });
+
+  res.set("Cache-Control", "no-cache").json(groups);
 });
 
 app.listen(PORT, "0.0.0.0", () => {

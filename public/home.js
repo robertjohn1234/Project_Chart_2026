@@ -62,16 +62,17 @@
     $("verseRef").textContent = VERSES[i].r + " (KJV)";
   }
 
-  // ---------- Bulletin board carousel ----------
+  // ---------- Bulletin board: tabs (groups) + carousel ----------
   async function initCarousel() {
     const track = $("carouselTrack");
-    let slides = [];
+    let groups = [];
     try {
       const res = await fetch("/api/bulletin", { cache: "no-store" });
-      slides = res.ok ? await res.json() : [];
-    } catch (e) { slides = []; }
+      groups = res.ok ? await res.json() : [];
+    } catch (e) { groups = []; }
+    groups = groups.filter(g => g.slides && g.slides.length);
 
-    if (!slides.length) {
+    if (!groups.length) {
       const empty = el("div", "carousel-empty");
       empty.appendChild(el("strong", "", "Bulletin board"));
       empty.appendChild(el("span", "", "No announcements yet. Add images to public/images/bulletin and push."));
@@ -79,29 +80,10 @@
       return;
     }
 
-    const figures = slides.map((s, i) => {
-      const fig = el("figure", "slide");
-      const img = document.createElement("img");
-      img.src = "/images/bulletin/" + encodeURIComponent(s.file);
-      img.alt = s.name;
-      if (i > 0) img.loading = "lazy";
-      fig.appendChild(img);
-      fig.appendChild(el("figcaption", "", s.name));
-      track.appendChild(fig);
-      return fig;
-    });
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const tabsBox = $("bulletinTabs");
+    let slides = [], figures = [], dotButtons = [], index = 0, timer = null, current = 0;
 
-    const dots = $("carouselDots");
-    const dotButtons = slides.map((s, i) => {
-      const b = el("button");
-      b.type = "button";
-      b.setAttribute("aria-label", "Show announcement " + (i + 1) + ": " + s.name);
-      b.addEventListener("click", () => { go(i); restart(); });
-      dots.appendChild(b);
-      return b;
-    });
-
-    let index = 0, timer = null;
     function go(i) {
       index = (i + slides.length) % slides.length;
       track.style.transform = "translateX(" + (-index * 100) + "%)";
@@ -109,18 +91,72 @@
       dotButtons.forEach((b, n) => b.setAttribute("aria-current", String(n === index)));
       $("carouselCount").textContent = (index + 1) + " / " + slides.length;
     }
-
-    const many = slides.length > 1;
-    $("prevBtn").hidden = !many;
-    $("nextBtn").hidden = !many;
-    $("carouselBar").hidden = !many;
-    go(0);
-    if (!many) return;
-
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    function start() { if (!reduce && !timer) timer = setInterval(() => { if (!document.hidden) go(index + 1); }, 6000); }
+    function start() {
+      if (!reduce && slides.length > 1 && !timer) timer = setInterval(() => { if (!document.hidden) go(index + 1); }, 6000);
+    }
     function stop() { clearInterval(timer); timer = null; }
     function restart() { stop(); start(); }
+
+    // Shows one group (tab): rebuilds the slides and dots
+    function show(g) {
+      current = g;
+      slides = groups[g].slides;
+      track.replaceChildren();
+      $("carouselDots").replaceChildren();
+
+      figures = slides.map((s, i) => {
+        const fig = el("figure", "slide");
+        const img = document.createElement("img");
+        img.src = s.src;
+        img.alt = s.name;
+        if (i > 0) img.loading = "lazy";
+        fig.appendChild(img);
+        fig.appendChild(el("figcaption", "", s.name));
+        track.appendChild(fig);
+        return fig;
+      });
+
+      dotButtons = slides.map((s, i) => {
+        const b = el("button");
+        b.type = "button";
+        b.setAttribute("aria-label", "Show announcement " + (i + 1) + ": " + s.name);
+        b.addEventListener("click", () => { go(i); restart(); });
+        $("carouselDots").appendChild(b);
+        return b;
+      });
+
+      const many = slides.length > 1;
+      $("prevBtn").hidden = !many;
+      $("nextBtn").hidden = !many;
+      $("carouselBar").hidden = !many;
+
+      [...tabsBox.children].forEach((t, n) => {
+        t.setAttribute("aria-selected", String(n === g));
+        t.tabIndex = n === g ? 0 : -1;
+      });
+
+      go(0);
+      restart();
+    }
+
+    // Tabs (hidden when there is only the "General" group)
+    if (!(groups.length === 1 && groups[0].name === "General")) {
+      groups.forEach((g, n) => {
+        const t = el("button", "", g.name + " (" + g.slides.length + ")");
+        t.type = "button";
+        t.setAttribute("role", "tab");
+        t.setAttribute("aria-controls", "carousel");
+        t.addEventListener("click", () => show(n));
+        t.addEventListener("keydown", e => {
+          if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+          const next = (n + (e.key === "ArrowRight" ? 1 : -1) + groups.length) % groups.length;
+          show(next);
+          tabsBox.children[next].focus();
+        });
+        tabsBox.appendChild(t);
+      });
+      tabsBox.hidden = false;
+    }
 
     $("prevBtn").addEventListener("click", () => { go(index - 1); restart(); });
     $("nextBtn").addEventListener("click", () => { go(index + 1); restart(); });
@@ -146,7 +182,7 @@
       start();
     });
 
-    start();
+    show(0);
   }
 
   // ---------- Project at a glance ----------
