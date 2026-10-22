@@ -1,0 +1,25 @@
+/* Second-level tabs shown on every dashboard page */
+.sub-nav { background: #fff; border-bottom: 1px solid #dbe2ea; }
+.sub-nav-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 16px;
+  display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.sub-nav a {
+  flex: 0 0 auto; padding: 12px 16px; text-decoration: none; color: #475569;
+  font-weight: 600; border-bottom: 3px solid transparent; white-space: nowrap;
+}
+.sub-nav a:hover { color: #0f172a; }
+.sub-nav a[aria-current="page"] { color: #1d4ed8; border-bottom-color: #1d4ed8; }
+.sub-nav a:focus-visible { outline: 3px solid #2563eb; outline-offset: -3px; }
+@media (pointer: coarse) { .sub-nav a { padding: 14px 16px; } }
+
+/* Header on phones: brand on top, Home / Dashboards as two equal buttons below */
+@media (max-width: 640px) {
+  .topbar-inner { flex-wrap: wrap; row-gap: 8px; }
+  .brand { min-width: 0; }
+  .main-nav { display: flex; gap: 8px; width: 100%; }
+  .main-nav a { flex: 1; text-align: center; }
+}
+@media (pointer: coarse) {
+  .main-nav a { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+}

@@ -92,33 +92,26 @@
 
     @media (max-width: 640px) {
       .trend-chart { height: 220px; }
+      .filter-bar button { flex: 1 1 auto; }
+
+      /* Tables become stacked cards */
+      .sv-block table, #holdSection table { min-width: 0; table-layout: auto; }
+      .sv-block table, .sv-block tbody, .sv-block tr, .sv-block td,
+      #holdSection table, #holdSection tbody, #holdSection tr, #holdSection td { display: block; width: 100%; }
+      .sv-block thead, #holdSection thead { display: none; }
+      .sv-block tr, #holdSection tr { border: 1px solid #d9e0e6; border-radius: 6px; padding: 8px 10px; margin-bottom: 10px; background: #fff; }
+      .sv-block tr.row-hold, #holdSection tr.row-hold { background: rgba(234, 179, 8, 0.16); }
+      .sv-block tr.row-done { background: rgba(22, 163, 74, 0.14); }
+      .sv-block tr td, #holdSection tr td { background: none !important; border: 0; padding: 4px 0; }
+      .sv-block td:empty, #holdSection td:empty { display: none; }
+      .sv-block td::before, #holdSection td::before { content: attr(data-label); display: block; font-size: 12px; opacity: 0.7; }
     }
   </style>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a class="brand" href="/" aria-label="PH PERTAMA dashboard home">
-        <img
-          class="brand-logo"
-          src="/images/phpertama-logo.jpg"
-          alt="PH PERTAMA logo"
-          onerror="this.style.display='none'"
-        >
-        <div class="brand-copy">
-          <div class="brand-name">PH PERTAMA ISTC</div>
-          <div class="brand-subtitle">Project Dashboard</div>
-        </div>
-      </a>
-      <nav class="main-nav" aria-label="Main navigation">
-        <a href="/">Home</a>
-        <a href="/#cable-status">Cable Status</a>
-        <a href="/s-curve.html">S-Curve</a>
-        <a href="/daily.html" aria-current="page">Daily Activities</a>
-      </nav>
-    </div>
-  </header>
+  <div id="site-header"></div>
+  <script src="/nav.js"></script>
 
   <main class="page-shell" id="daily-activities">
     <div class="page-heading">
@@ -313,6 +306,7 @@
   // ---------- Table helpers ----------
   function progressCell(item) {
     const cell = document.createElement("td");
+    cell.dataset.label = "Progress";
     if (item.percent === null) {
       cell.textContent = "—";
       return cell;
@@ -328,13 +322,15 @@
 
   function statusCell(item) {
     const cell = document.createElement("td");
+    cell.dataset.label = "Status";
     cell.appendChild(el("span", "badge " + item.state, STATE_LABELS[item.state] || item.state));
     return cell;
   }
 
-  function textCell(text) {
+  function textCell(text, label) {
     const cell = document.createElement("td");
     cell.textContent = text;
+    if (label) cell.dataset.label = label;
     return cell;
   }
 
@@ -372,10 +368,10 @@
     held.forEach(({ supervisor, item }) => {
       const row = body.insertRow();
       row.className = "row-hold";
-      row.appendChild(textCell(supervisor));
-      row.appendChild(textCell(item.action));
+      row.appendChild(textCell(supervisor, "Supervisor"));
+      row.appendChild(textCell(item.action, "Activity"));
       row.appendChild(progressCell(item));
-      row.appendChild(textCell(item.reason || item.notes || "—"));
+      row.appendChild(textCell(item.reason || item.notes || "—", "Reason"));
     });
 
     wrap.appendChild(table);
@@ -442,10 +438,10 @@
       items.forEach(item => {
         const row = body.insertRow();
         row.className = rowClass(item);
-        row.appendChild(textCell(item.action));
+        row.appendChild(textCell(item.action, "Activity"));
         row.appendChild(progressCell(item));
         row.appendChild(statusCell(item));
-        row.appendChild(textCell(item.notes || "—"));
+        row.appendChild(textCell(item.notes || "—", "Notes"));
       });
 
       wrap.appendChild(table);

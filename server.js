@@ -56,6 +56,21 @@ app.get("/api/scurve", (req, res) => sendJsonFile(res, SCURVE_FILE));
 app.get("/api/daily", (req, res) => sendJsonFile(res, DAILY_FILE));
 app.get("/api/daily-history", (req, res) => sendJsonFile(res, DAILY_HISTORY_FILE));
 
+// Bulletin board: lists the images in public/images/bulletin (the file name becomes the caption)
+const BULLETIN_DIR = path.join(__dirname, "public", "images", "bulletin");
+app.get("/api/bulletin", (req, res) => {
+  let files = [];
+  try {
+    files = fs.readdirSync(BULLETIN_DIR).filter(f => /\.(jpe?g|png|webp|gif|avif)$/i.test(f));
+  } catch (error) {
+    files = [];
+  }
+  files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
+  const pretty = f =>
+    path.parse(f).name.replace(/^\d{1,3}[\s_.-]+/, "").replace(/_+/g, " ").replace(/\s+/g, " ").trim() || f;
+  res.set("Cache-Control", "no-cache").json(files.map(file => ({ file, name: pretty(file) })));
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Cable dashboard running on port ${PORT}`);
   console.log("Dashboard JSON exists:", fs.existsSync(DATA_FILE));

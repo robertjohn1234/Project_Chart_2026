@@ -1,0 +1,41 @@
+// Builds the site header and navigation on every page.
+// To add a new dashboard, add one line to DASHBOARDS below.
+(function () {
+  const DASHBOARDS = [
+    { href: "/cable-status.html", label: "Cable Status" },
+    { href: "/s-curve.html", label: "S-Curve" },
+    { href: "/daily.html", label: "Daily Activities" }
+  ];
+
+  const path = location.pathname.replace(/\/index\.html$/, "/");
+  const onHome = path === "/";
+  const onDashboards = DASHBOARDS.some(d => d.href === path);
+
+  const css = document.createElement("link");
+  css.rel = "stylesheet";
+  css.href = "/nav.css";
+  document.head.appendChild(css);
+
+  const current = flag => (flag ? ' aria-current="page"' : "");
+
+  let html =
+    '<header class="topbar"><div class="topbar-inner">' +
+    '<a class="brand" href="/" aria-label="PH PERTAMA dashboard home">' +
+    '<img class="brand-logo" src="/images/phpertama-logo.jpg" alt="PH PERTAMA logo" onerror="this.style.display=\'none\'">' +
+    '<div class="brand-copy"><div class="brand-name">PH PERTAMA ISTC</div>' +
+    '<div class="brand-subtitle">Project Dashboard</div></div></a>' +
+    '<nav class="main-nav" aria-label="Main navigation">' +
+    '<a href="/"' + current(onHome) + ">Home</a>" +
+    '<a href="' + DASHBOARDS[0].href + '"' + current(onDashboards) + ">Dashboards</a>" +
+    "</nav></div></header>";
+
+  if (onDashboards) {
+    html +=
+      '<nav class="sub-nav" aria-label="Dashboards"><div class="sub-nav-inner">' +
+      DASHBOARDS.map(d => '<a href="' + d.href + '"' + current(d.href === path) + ">" + d.label + "</a>").join("") +
+      "</div></nav>";
+  }
+
+  const host = document.getElementById("site-header");
+  if (host) host.innerHTML = html;
+})();

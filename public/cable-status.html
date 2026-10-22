@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PH PERTAMA ISTC | Cable Status</title>
+  <meta name="description" content="PH PERTAMA internal project dashboard for cable pulling and termination progress.">
+  <script src="/vendor/chart.umd.js"></script>
+
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+  <div id="site-header"></div>
+  <script src="/nav.js"></script>
+
+  <main class="page-shell" id="cable-status">
+    <div class="page-heading">
+      <div>
+        <h1>Cable Pulling &amp; Termination</h1>
+        <p class="muted" id="reportDate">Loading reporting date...</p>
+      </div>
+      <button id="refreshButton" type="button">Refresh Data</button>
+    </div>
+
+    <section class="cards" id="summaryCards"></section>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>Latest Progress by Area</h2>
+        <div class="chart-area" id="areaChartWrap">
+          <canvas id="areaChart" role="img" aria-label="Bar chart of latest progress by installation area"></canvas>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Weekly Progress Trend</h2>
+        <label class="muted" for="areaSelect">Select installation area</label>
+        <select id="areaSelect" aria-label="Select installation area"></select>
+        <div class="trend-area">
+          <canvas id="trendChart" role="img" aria-label="Line chart of weekly progress for the selected installation area"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Detailed Weekly Progress</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Section</th>
+              <th>Installation Area</th>
+              <th>Previous Week</th>
+              <th>Latest Week</th>
+              <th>Change</th>
+            </tr>
+          </thead>
+          <tbody id="progressTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <p id="status">Connecting to dashboard data...</p>
+    <footer class="footer">PH PERTAMA · Internal Project Dashboard</footer>
+  </main>
+
+<script>
+  let dashboardData = null;
+  let areaChart = null;
+  let trendChart = null;
+  let lastPayload = "";
+
+  // How often the page checks for new data (in minutes)
+  const CHECK_EVERY_MINUTES = 5;
+
+  const sectionColors = {
+    "MV": "#2563eb",
+    "LV": "#0d9488",
+    "ELV & Automation": "#7c3aed"
+  };
+
+  const percent = value =>
+    value === null || value === undefined
+      ? "—"
+      : (value * 100).toFixed(1) + "%";
+
+  const shortDate = value => {
+    const [year, month, day] = value.split("-");
+    return `${month}/${day}/${year}`;
+  };
+
+  function renderCards(summary) {
+    const container = document.getElementById("summaryCards");
+    container.replaceChildren();
+
+    summary.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const label = document.createElement("div");
+      label.className = "card-label";
+      label.textContent = item.section + " Average";
+
+      const value = document.createElement("div");
+      value.className = "card-value";
+      value.textContent = percent(item.average);
+
+      card.append(label, value);
+      container.appendChild(card);
+    });
+  }
+
+  function renderAreaChart(data) {
+    const validAreas = data.areas.filter(
+      item => item.latest !== null
+    );
+
+    // Make the chart taller when there are many areas so labels do not crowd
+    const wrap = document.getElementById("areaChartWrap");
+    wrap.style.height = Math.max(320, validAreas.length * 28 + 60) + "px";
+
+    if (areaChart) areaChart.destroy();
+
+    areaChart = new Chart(document.getElementById("areaChart"), {
+      type: "bar",
+      data: {
+        labels: validAreas.map(
+          item => `${item.section} | ${item.area}`
+        ),
+        datasets: [{
+          label: "Latest Progress",
+          data: validAreas.map(item => item.latest * 100),
+          backgroundColor: validAreas.map(
+            item => sectionColors[item.section] || "#64748b"
+          ),
+          borderRadius: 4
+        }]
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: context => context.raw.toFixed(1) + "%"
+            }
+          }
+        },
+        scales: {
+          x: {
+            min: 0,
+            max: 100,
+            ticks: { callback: value => value + "%" }
+          },
+          y: {
+            ticks: { font: { size: 11 } }
+          }
+        }
+      }
+    });
+  }
+
+  function renderAreaSelector(data) {
+    const select = document.getElementById("areaSelect");
+    const oldValue = select.value;
+    select.replaceChildren();
+
+    data.areas.forEach((item, index) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = `${item.section} | ${item.area}`;
+      select.appendChild(option);
+    });
+
+    if (oldValue !== "" && Number(oldValue) < data.areas.length) {
+      select.value = oldValue;
+    } else {
+      const preferred = data.areas.findIndex(
+        item => item.section === "LV" && item.area.includes("RML")
+      );
+      select.value = String(preferred >= 0 ? preferred : 0);
+    }
+  }
+
+  function renderTrendChart(data) {
+    const selectedIndex = Number(
+      document.getElementById("areaSelect").value
+    );
+    const item = data.areas[selectedIndex];
+    if (!item) return;
+
+    if (trendChart) trendChart.destroy();
+
+    trendChart = new Chart(document.getElementById("trendChart"), {
+      type: "line",
+      data: {
+        labels: data.weeks.map(shortDate),
+        datasets: [{
+          label: `${item.section} | ${item.area}`,
+          data: item.progress.map(
+            value => value === null ? null : value * 100
+          ),
+          borderColor: sectionColors[item.section] || "#2563eb",
+          backgroundColor: sectionColors[item.section] || "#2563eb",
+          borderWidth: 3,
+          pointRadius: 4,
+          tension: 0.2,
+          spanGaps: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, position: "bottom" }
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: 100,
+            ticks: { callback: value => value + "%" }
+          }
+        }
+      }
+    });
+  }
+
+  function renderTable(data) {
+    const body = document.getElementById("progressTable");
+    body.replaceChildren();
+    let lastSection = "";
+
+    data.areas.forEach(item => {
+      if (item.section !== lastSection) {
+        lastSection = item.section;
+        const row = body.insertRow();
+        row.className = "section-row";
+        const cell = row.insertCell();
+        cell.colSpan = 5;
+        cell.textContent = item.section;
+      }
+
+      const row = body.insertRow();
+      row.insertCell().textContent = item.section;
+      row.insertCell().textContent = item.area;
+      row.insertCell().textContent = percent(item.previous);
+      row.insertCell().textContent = percent(item.latest);
+
+      const changeCell = row.insertCell();
+      if (item.change === null) {
+        changeCell.textContent = "—";
+      } else {
+        const change = item.change;
+        const sign = change > 0 ? "+" : "";
+        changeCell.textContent = sign + change.toFixed(1) + " pp";
+        changeCell.className =
+          change > 0 ? "positive" :
+          change < 0 ? "negative" : "zero";
+      }
+    });
+  }
+
+  // manual = true when the person clicks "Refresh Data"
+  async function refreshDashboard(manual = false) {
+    const status = document.getElementById("status");
+
+    try {
+      if (manual === true) status.textContent = "Loading dashboard data...";
+
+      const response = await fetch("/api/data", { cache: "no-store" });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to load dashboard data.");
+      }
+
+      // Only redraw when the data really changed (or on manual refresh)
+      const payload = JSON.stringify(data);
+      if (manual === true || payload !== lastPayload) {
+        lastPayload = payload;
+        dashboardData = data;
+
+        document.getElementById("reportDate").textContent =
+          "Latest reporting week: " + shortDate(data.latestDate);
+
+        renderCards(data.summary);
+        renderAreaChart(data);
+        renderAreaSelector(data);
+        renderTrendChart(data);
+        renderTable(data);
+      }
+
+      status.textContent =
+        "Connected | Last checked: " +
+        new Date().toLocaleTimeString();
+    } catch (error) {
+      status.textContent = "Error: " + error.message;
+    }
+  }
+
+  document.getElementById("refreshButton")
+    .addEventListener("click", () => refreshDashboard(true));
+
+  document.getElementById("areaSelect")
+    .addEventListener("change", () => {
+      if (dashboardData) renderTrendChart(dashboardData);
+    });
+
+  refreshDashboard();
+
+  // Check for new data periodically, but not while the tab is hidden
+  setInterval(() => {
+    if (!document.hidden) refreshDashboard();
+  }, CHECK_EVERY_MINUTES * 60 * 1000);
+</script>
+</body>
+</html>
