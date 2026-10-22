@@ -93,6 +93,10 @@
     @media (max-width: 640px) {
       .trend-chart { height: 220px; }
       .filter-bar button { flex: 1 1 auto; }
+      main { overflow-wrap: anywhere; }
+      .sv-block *, #holdSection * { box-sizing: border-box; }
+      .sv-block tr, #holdSection tr { max-width: 100%; }
+      .sv-meta { display: block; margin: 2px 0 0; }
 
       /* Tables become stacked cards */
       .sv-block table, #holdSection table { min-width: 0; table-layout: auto; }

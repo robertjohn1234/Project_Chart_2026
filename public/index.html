@@ -37,13 +37,25 @@
         </div>
       </div>
 
-      <div>
-        <h2 class="section-title">Verse for today</h2>
+      <div class="side-col">
+        <h2 class="section-title">Daily inspiration</h2>
         <div class="verse-card">
+          <div class="chips" id="inspoChips" role="tablist" aria-label="Choose a category"></div>
           <blockquote class="verse-text" id="verseText">Loading...</blockquote>
           <div>
             <div class="verse-ref" id="verseRef"></div>
-            <button class="verse-btn" id="verseBtn" type="button">Show another verse</button>
+            <button class="verse-btn" id="verseBtn" type="button">Show another</button>
+          </div>
+        </div>
+
+        <h2 class="section-title">Horoscope for today</h2>
+        <div class="verse-card horo-card">
+          <label class="muted" for="signSelect">Your sign</label>
+          <select id="signSelect"></select>
+          <blockquote class="verse-text" id="horoText"></blockquote>
+          <div>
+            <div class="verse-ref" id="horoMeta"></div>
+            <div class="muted small">For fun and inspiration only.</div>
           </div>
         </div>
       </div>
