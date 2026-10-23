@@ -1,0 +1,17 @@
+# English jokes
+# One item per line. Lines starting with # and empty lines are ignored.
+# Use \n for a line break, e.g.  Setup?\nPunchline.
+# Add as many lines as you like (thousands are fine), then push.
+
+Why did the electrician get promoted?\nHe really knew how to make the right connections.
+Why was the cable tray so calm?\nIt knew how to carry the load.
+How does a ladder stay humble?\nIt knows its steps.
+What did the ground wire say to the live wire?\nStay safe out there, I've got your back.
+Why did the circuit breaker go to therapy?\nIt couldn't handle the pressure.
+I would tell you a construction joke...\nbut I'm still working on it.
+Why did the scarecrow win an award?\nHe was outstanding in his field.
+Why don't skeletons fight each other?\nThey don't have the guts.
+I told my crew to stay positive.\nNow they only talk about the plus side of the battery.
+What do you call a fake noodle?\nAn impasta.
+Why did the tape measure get a raise?\nIt always came up with the right length.
+I'm reading a book about anti-gravity.\nIt's impossible to put down.

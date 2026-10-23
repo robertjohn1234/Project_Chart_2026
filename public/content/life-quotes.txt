@@ -1,0 +1,17 @@
+# Life quotes
+# One item per line. Lines starting with # and empty lines are ignored.
+# Optional author:  text || Author
+# Add as many lines as you like (thousands are fine), then push.
+
+A journey of a thousand miles begins with a single step.
+Fall seven times, stand up eight.
+The best time to plant a tree was twenty years ago. The second best time is now.
+Little by little, a little becomes a lot.
+Small efforts repeated every day build big results.
+Safety first, so everyone goes home to the people they love.
+A smooth sea never made a skilled sailor.
+Make each day worth remembering.
+Work with patience, finish with pride.
+Gratitude turns what we have into enough.
+Teamwork turns a heavy load into a light one.
+Do your best, then let the rest follow.

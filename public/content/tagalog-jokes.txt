@@ -1,0 +1,17 @@
+# Tagalog jokes
+# One item per line. Lines starting with # and empty lines are ignored.
+# Use \n for a line break, e.g.  Tanong?\nSagot.
+# Add as many lines as you like (thousands are fine), then push.
+
+Teacher: Juan, aling buwan ang may 28 araw?\nJuan: Lahat po, ma'am!
+Anong sabi ng bumbilya sa switch?\n“Ikaw lang ang nagpapaliwanag ng buhay ko.”
+Boss: Bakit ka laging late?\nEmpleyado: Sir, mahaba po kasi ang pila... sa kama.
+Doktor: Mag-exercise ka para pumayat.\nPasyente: Nag-e-exercise na po ako, Doc!\nDoktor: Ano ginagawa mo?\nPasyente: Tumatalon po sa konklusyon.
+Pasahero: Manong, bakit ang bagal ng jeep?\nDriver: Para po matagal tayong magkasama, sir.
+Estudyante: Ma'am, may quiz po ba bukas?\nTeacher: Wala.\nEstudyante: Yehey!\nTeacher: Exam po.
+Pulis: Bakit mo binilisan ang takbo?\nDriver: Hinahabol ko po ang sweldo, sir.
+Customer: Miss, may discount ba kayo?\nTindera: Meron po, sir. Doon po sa kabilang tindahan.
+Anong tawag sa gutom na electrician?\nKailangan nang i-charge!
+Pare: Bakit ka may dalang hagdan sa meeting?\nKaibigan: Para umangat ang usapan.
+Anong sabi ng pusa sa daga?\n“Hindi kita kakainin... friend zone lang tayo.”
+Nanay: Anak, bakit ang tahimik mo?\nAnak: Nay, nagbabayad po kasi ako ng utang... na loob.

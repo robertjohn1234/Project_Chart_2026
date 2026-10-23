@@ -1,0 +1,29 @@
+# Horoscope messages
+# One item per line. Lines starting with # and empty lines are ignored.
+# One message per line. Each sign gets one per day, picked from this list.
+# Add as many lines as you like (thousands are fine), then push.
+
+A small task you finish early today will free up your afternoon. Start with the one you have been avoiding.
+Good news may come through a coworker. Stay open and listen well.
+Patience pays off today. Double-check the details before you move on.
+Someone needs your help. A little kindness from you will go a long way.
+Your hard work is being noticed, even if no one says it out loud.
+Avoid rushing today. Slow and steady keeps you safe and on schedule.
+A new idea arrives in the middle of the day. Write it down before it slips away.
+Teamwork is your strength today. Share the load and share the credit.
+An old problem has a simple solution. Ask for a fresh pair of eyes.
+Take a short break. Rest now will give you more energy later.
+Money matters look steady. A small saving today brings comfort later.
+A friendly conversation brightens your day. Reach out to someone you miss.
+Stay calm when plans change. A better path may be just ahead.
+Family comes first this evening. Go home with a grateful heart.
+You are closer to your goal than you think. Keep going.
+A challenge turns into a lesson. Learn from it and move on with confidence.
+Trust your instincts at work today, but confirm with facts.
+Someone may surprise you with a kind word. Return the favor.
+Focus on one thing at a time. Quality beats speed today.
+A small act of courage opens a door. Speak up when it matters.
+Be generous with your time. What you give comes back in unexpected ways.
+Your energy is high. Use it to finish what you started.
+Listen more than you talk today. You will learn something valuable.
+A calm mind solves what a hurried one cannot. Breathe, then decide.

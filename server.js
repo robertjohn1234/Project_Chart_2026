@@ -10,6 +10,12 @@ const SCURVE_FILE = path.join(__dirname, "scurve-data.json");
 const DAILY_FILE = path.join(__dirname, "daily-data.json");
 const DAILY_HISTORY_FILE = path.join(__dirname, "daily-history.json");
 
+// Optional: smaller downloads for big text files. Install once with:  npm install compression
+try { app.use(require("compression")()); } catch (error) { /* not installed: works fine without it */ }
+
+// Quote, joke and horoscope text files (cached by the browser for an hour)
+app.use("/content", express.static(path.join(__dirname, "public", "content"), { maxAge: "1h" }));
+
 // Serves Chart.js to the browser at /vendor/chart.umd.js
 app.use(
   "/vendor",

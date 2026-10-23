@@ -11,10 +11,11 @@
   const onHome = path === "/";
   const onDashboards = DASHBOARDS.some(d => d.href === path);
 
-  const css = document.createElement("link");
-  css.rel = "stylesheet";
-  css.href = "/nav.css";
-  document.head.appendChild(css);
+  // Colors the browser bar on phones
+  const theme = document.createElement("meta");
+  theme.name = "theme-color";
+  theme.content = "#0065B2";
+  document.head.appendChild(theme);
 
   const current = flag => (flag ? ' aria-current="page"' : "");
 

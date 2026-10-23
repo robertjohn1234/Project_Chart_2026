@@ -1,0 +1,17 @@
+# Love quotes
+# One item per line. Lines starting with # and empty lines are ignored.
+# Optional author:  text || Author
+# Add as many lines as you like (thousands are fine), then push.
+
+Love is not about finding someone perfect, but about choosing someone every day.
+The best kind of love makes you a better version of yourself.
+Home is wherever you are with the one you love.
+True love listens, even when the words run out.
+Love grows when we give without counting.
+A kind word and a faithful heart are worth more than a thousand gifts.
+Distance means nothing when someone means everything.
+To love and to be loved is the warmest kind of sunshine.
+Real love stays when it's hard and celebrates when it's easy.
+Love is the quiet promise to show up.
+Hold hands, hold hope, hold on.
+The strongest love is the one that forgives and starts again.
