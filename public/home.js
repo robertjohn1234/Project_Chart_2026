@@ -57,6 +57,15 @@
     const d = new Date();
     return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
   }
+
+  // Counts days (local date), so every day moves on to the next block of the list.
+  // PER_DAY items are shown each day, and nothing repeats until the whole list has been used:
+  // with 310 lines in a file = 31 days without a repeat.
+  const PER_DAY = 10;
+  function dayNumber() {
+    const d = new Date();
+    return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+  }
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
@@ -65,8 +74,8 @@
   let category = 0;
   const shown = {};
 
-  // random = false: the item of the day (or the one already showing); true: a different random one
-  async function showItem(random) {
+  // next = false: show today's item (or the one already showing); true: the next of today's PER_DAY items
+  async function showItem(next) {
     const c = CATEGORIES[category];
     if (!c.items) {
       $("verseText").textContent = "Loading...";
@@ -84,16 +93,14 @@
       return;
     }
 
-    let i = shown[c.key];
-    if (random) {
-      do { i = Math.floor(Math.random() * c.items.length); } while (i === shown[c.key] && c.items.length > 1);
-    } else if (i === undefined || i >= c.items.length) {
-      i = hash(todayKey() + "|" + c.key) % c.items.length;
-    }
-    shown[c.key] = i;
-    const item = c.items[i];
+    const perDay = Math.min(PER_DAY, c.items.length);
+    let slot = shown[c.key] === undefined ? 0 : shown[c.key];
+    if (next) slot = (slot + 1) % perDay;
+    shown[c.key] = slot;
+
+    const item = c.items[(dayNumber() * PER_DAY + slot) % c.items.length];
     $("verseText").textContent = c.quote ? "\u201C" + item.t + "\u201D" : item.t;
-    $("verseRef").textContent = item.r || c.label;
+    $("verseRef").textContent = (item.r || c.label) + " \u00B7 " + (slot + 1) + " of " + perDay + " today";
   }
 
   function initInspiration() {
@@ -138,9 +145,12 @@
     }
     if (!horoLines.length) { $("horoText").textContent = "Add lines to public/content/horoscope.txt"; return; }
 
-    const sign = SIGNS[Number($("signSelect").value)];
+    // Each sign gets a different message every day, and none repeats until the list is used up
+    // (372 lines = 31 days for 12 signs)
+    const signIndex = Number($("signSelect").value);
+    const sign = SIGNS[signIndex];
     const seed = todayKey() + "|" + sign[0];
-    $("horoText").textContent = horoLines[hash(seed) % horoLines.length];
+    $("horoText").textContent = horoLines[(dayNumber() * SIGNS.length + signIndex) % horoLines.length];
     $("horoMeta").textContent =
       "Lucky number: " + (1 + hash(seed + "n") % 99) + " \u00B7 Lucky color: " + LUCKY_COLORS[hash(seed + "c") % LUCKY_COLORS.length];
   }

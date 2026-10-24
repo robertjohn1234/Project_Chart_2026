@@ -65,3 +65,269 @@ Foreman: Sino ang nag-iwan ng martilyo sa taas?\nWorker: Ako po, sir.\nForeman: 
 Anong tawag sa electrician na laging masaya?\nHigh-voltage ang ngiti!
 Boss: Bakit hindi mo natapos ang trabaho?\nEmpleyado: Sir, kasi po sabi niyo huwag magmadali.\nBoss: Sabi ko po iyon noong Lunes!
 Tindero: Sir, ito po ang pinakamurang paninda ko.\nCustomer: Magkano po?\nTindero: Libre po... ang tumingin.
+Teacher: Juan, bakit ka late?\nJuan: Ma'am, may sign po kasi sa daan na "School Ahead, Go Slow."
+Nanay: Anak, bakit ang baba ng grade mo sa Math?\nAnak: Eh Nay, hindi naman po ako ang gumawa ng problema.
+Pedro: Pare, bakit ka nag-aaral ng Chinese?\nJuan: Para makausap ko ang bigas.
+Customer: Waiter, may langaw sa sopas ko!\nWaiter: Sir, libre po 'yan, extra protein.
+Doktor: Ano ang problema mo?\nPasyente: Doc, ang hilig kong magkwento ng magkwento.\nDoktor: Ah, may chronic story-telling ka.
+Teacher: Anong tawag sa taong hindi nagsisinungaling?\nEstudyante: Hindi ko po alam, ma'am, wala pa po akong nakilala.
+Boss: Bakit ang tagal mo sa banyo?\nEmpleyado: Sir, nagbabasa po ako ng memo, naka-flush na.
+Anak: Tay, pwede po bang humingi ng pera?\nTatay: Pera? Anak, ako nga ay nanghihingi rin sa nanay mo.
+Juan: Mahal, bakit mo ako iniwan?\nMaria: Kasi ang pangit mo.\nJuan: Hindi totoo 'yan, sinabi lang ng salamin.
+Pasahero: Manong, pwedeng ibaba mo ako sa tabi?\nDriver: Sir, nasa gitna pa po tayo ng kalsada.
+Estudyante: Ma'am, kailangan ko po ng tulong sa math.\nTeacher: Sige, ano ang 2+2?\nEstudyante: Ma'am, kasama po ba 'yong pamasahe?
+Nanay: Anak, pumunta ka sa tindahan, bumili ng suka.\nAnak: Nay, wala po akong pera.\nNanay: Sige, bumili ka na lang ng asim.
+Waiter: Sir, ano po ang order ninyo?\nCustomer: Isang kain.\nWaiter: Sir, anong kain po?\nCustomer: Kahit ano, basta mabusog.
+Boss: Bakit hindi ka pumasok kahapon?\nEmpleyado: Sir, nagkasakit po ako.\nBoss: Sino ang kasama mo?\nEmpleyado: Si Mama po, sir.
+Teacher: Ilan ang planeta sa solar system?\nEstudyante: Walo po, ma'am.\nTeacher: Sino ang pinaka-malaki?\nEstudyante: Si Jupiter po. Si Pluto po ay nagtampo.
+Anak: Nay, bakit po ang daming tao sa langit?\nNanay: Anak, kasi mababait sila.\nAnak: Eh bakit po ang dami naming kapitbahay?
+Juan: Doc, ang sakit ng tiyan ko.\nDoktor: Ano ang kinain mo?\nJuan: Doc, 'yong bigay ng kapitbahay.\nDoktor: Ah, bigay-sakit.
+Teacher: Bakit hindi mo ginawa ang homework mo?\nEstudyante: Ma'am, nawawala po ang lapis ko.\nTeacher: Eh 'yong papel?\nEstudyante: Nawala rin po, kasama ng lapis.
+Tindero: Sir, bili na po kayo ng relo.\nCustomer: Gaano katagal bago maayos?\nTindero: Hindi ko po alam, sir, wala pong oras.
+Pedro: Pare, bakit malungkot ka?\nJuan: Nasira ang cellphone ko.\nPedro: Ano nangyari?\nJuan: Nahulog sa pag-ibig... sa tubig.
+Pulis: Ano ang pangalan mo?\nJuan: Juan po.\nPulis: Apelyido?\nJuan: Dela Cruz po.\nPulis: Saan ka nakatira?\nJuan: Sa bahay po.
+Bata: Tay, saan nagmula ang tao?\nTatay: Sa unggoy.\nBata: Eh si Nanay?\nTatay: Sa gubat.\nNanay: Ano?!\nTatay: Sa gubat ng tsismis.
+Nanay: Anak, bakit hindi ka kumakain ng gulay?\nAnak: Nay, may kaibigan po akong gulay.\nNanay: Sino?\nAnak: Si Talong. Ayaw ko pong kainin ang kaibigan ko.
+Customer: Magkano po ito?\nTindera: Sampung piso lang po.\nCustomer: Eh bakit kahapon singkwenta?\nTindera: Kasi kahapon po, bago pa.
+Lola: Apo, bakit ang aga mong gumising?\nApo: Lola, kasi po binubulabog ako ng alarm clock.\nLola: Eh bakit mo nilalagay sa tabi mo?\nApo: Para po marinig ko.
+Juan: Boss, humihingi po ako ng taas sa sweldo.\nBoss: Anong dahilan?\nJuan: Kasi po tumataas ang presyo ng bigas.\nBoss: Eh di bumili ka ng kanin.
+Estudyante: Sir, bakit po ako bagsak?\nGuro: Kasi walang sagot ang test mo.\nEstudyante: Eh Sir, walang tanong na nasagot ko.
+Anak: Nay, ano po ang ulam?\nNanay: Adobo.\nAnak: Eh kahapon po?\nNanay: Adobo rin.\nAnak: Eh bukas po?\nNanay: Naku, anak, hindi ko pa alam. Sana adobo.
+Asawa: Mahal, kanina ka pa tahimik. Ano ang iniisip mo?\nMister: Wala, iniisip ko lang kung ano ang iniisip mo.\nAsawa: Eh ano nga?\nMister: Wala.
+Pedro: Ano ang pinakamabilis na hayop?\nJuan: Ang Tigre.\nPedro: Mali, ang pinakamabilis ay ang Cheetah.\nJuan: Eh pare, Cheetah na ang ginamit mo.
+Teacher: Ano ang tawag sa hayop na may apat na paa at malaki ang tenga?\nEstudyante: Si Nanay po pag galit.
+Customer: Pare, ang mahal ng gupit mo.\nBarbero: Sir, kasi po mahal ang buhok ninyo.
+Pasahero: Manong, pwede bang pabilisin?\nDriver: Sir, kung pabilisin ko, baka makarating tayo sa langit.\nPasahero: Sige po, bagalan niyo na lang.
+Nanay: Anak, anong gusto mong maging paglaki?\nAnak: Bata po ulit.
+Doctor: Mukhang kailangan mo ng pahinga.\nPasyente: Doc, hindi ako makapahinga. May trabaho ako.\nDoctor: Eh di magpahinga ka sa trabaho.
+Boss: Bakit ka natutulog sa oras ng trabaho?\nEmpleyado: Sir, kasi po sabi ninyo kailangan laging "alert."\nBoss: Eh bakit ka natutulog?\nEmpleyado: Alert po sa panaginip.
+Tatay: Anak, ano ang gusto mong maging paglaki mo?\nAnak: Pulis po.\nTatay: Bakit?\nAnak: Para po hindi na ako hulihin.
+Estudyante: Ma'am, pwede po bang magtanong?\nTeacher: Sige, ano 'yon?\nEstudyante: Pwede po bang umuwi?
+Juan: Pare, may problema ako.\nPedro: Ano 'yon?\nJuan: Ang dami kong utang.\nPedro: Ilan?\nJuan: Hindi ko na mabilang, kasi wala akong calculator.
+Anak: Nay, wala po akong baon.\nNanay: Eh di wag kang magutom.
+Teacher: Bakit ka nagbabasa sa klase?\nEstudyante: Kasi po sabi ninyo kailangan kong mag-aral.\nTeacher: Eh 'yan ay komiks!\nEstudyante: Opo, aral po ng drawing.
+Waitress: Ano po ang order ninyo, sir?\nCustomer: Kape po.\nWaitress: Mainit o malamig?\nCustomer: Kahit ano, basta may kape.
+Juan: Pare, may bago akong trabaho.\nPedro: Ano 'yon?\nJuan: Taga-sukat ng ulan.\nPedro: Paano?\nJuan: Naghihintay lang ako sa labas.
+Maria: Mahal, bakit parang ang tahimik ng bahay?\nJuan: Kasi wala 'yong anak natin.\nMaria: Eh nasaan?\nJuan: Nasa lola, may baon.
+Guro: Sino sa inyo ang may alagang hayop?\nEstudyante: Ako po, ma'am.\nGuro: Ano ang pangalan niya?\nEstudyante: Kuya po, nasa bahay namin, hindi ko alam kung bakit.
+Pedro: Anong tawag sa taong laging nagmamadali?\nJuan: Hindi ko alam.\nPedro: Si Late.
+Nanay: Bakit hindi ka pa naliligo?\nAnak: Nay, hindi naman po ako madumi.\nNanay: Eh bakit amoy-pawis ka?\nAnak: Amoy-pagod po, hindi pawis.
+Teacher: Class, sino ang nakakaalam ng pangalan ng pambansang bayani?\nEstudyante: Si Juan po, ma'am.\nTeacher: Hindi, si Rizal.\nEstudyante: Eh si Juan din po 'yon, Juan Rizal.
+Juan: Pare, ano ang ginagawa mo?\nPedro: Nagdidiet.\nJuan: Eh bakit may hawak kang pizza?\nPedro: Diet ng Italian.
+Asawa: Mahal, bakit ang tagal mo?\nMister: Naghanap lang ako ng parking.\nAsawa: Eh nasaan na ang sasakyan?\nMister: Hindi ko pa nahahanap.
+Customer: Manong, gaano katagal ang biyahe?\nDriver: Isang oras po.\nCustomer: Eh bakit ang tagal na natin?\nDriver: Kasi po, may bonus na kuwento.
+Doktor: Ano ang kinakain mo sa umaga?\nPasyente: Kape po.\nDoktor: Eh sa tanghali?\nPasyente: Kape rin.\nDoktor: Eh sa gabi?\nPasyente: Kape pa rin, Doc.
+Bata: Tay, saan pumupunta ang araw sa gabi?\nTatay: Sa kabilang bansa.\nBata: Eh bakit po hindi sila nagbabayad ng kuryente?
+Pedro: Pare, nag-propose ako kahapon.\nJuan: Anong sagot?\nPedro: Sabi niya "mag-isip muna ako."\nJuan: Eh anong ginawa mo?\nPedro: Nag-isip na rin ako.
+Nanay: Anak, bakit ang dumi ng uniform mo?\nAnak: Nay, naglaro po ako ng bola.\nNanay: Eh bakit ang laki ng butas?\nAnak: Napasok po sa goal.
+Pedro: Pare, anong gagawin mo kung may nanalo ka sa lotto?\nJuan: Hindi ko alam, hindi pa ako nananalo.
+Teacher: Ano ang kulay ng langit?\nEstudyante: Asul po.\nTeacher: Eh sa gabi?\nEstudyante: Eh, asul pa rin po, madilim lang.
+Juan: Ano ba ang trabaho mo?\nPedro: Taga-bantay ng orasan.\nJuan: Ano 'yon?\nPedro: Hinihintay ko lang mag-alas singko.
+Nanay: Bakit hindi mo sinasagot ang tawag ko?\nAnak: Nay, wala po akong load.\nNanay: Eh bakit hindi ka bumili?\nAnak: Wala po akong pera pambili ng load.
+Boss: Bakit ka nandiyan lang?\nEmpleyado: Sir, nagtatrabaho po ako sa isip.\nBoss: Eh ang katawan?\nEmpleyado: Naka-leave po.
+Estudyante: Ma'am, ano po ang sagot sa number five?\nTeacher: Hindi ko sasabihin.\nEstudyante: Sige po, sa number six na lang.
+Pasahero: Manong, saan po ang bayad?\nConductor: Sa harap po.\nPasahero: Eh bakit ang daming nakatayo?\nConductor: Kasi po nag-uusap sila tungkol sa bayad.
+Juan: Pare, may bago akong cellphone.\nPedro: Ano ang laman?\nJuan: Wala pa, pero maraming picture ng pagkain.
+Customer: Pwede po bang makabili ng sampung piso na kahon?\nTindera: Ano po?\nCustomer: 'Yong kahon po ng sampung piso.
+Nanay: Anak, bumili ka ng bigas.\nAnak: Nay, magkano po?\nNanay: Isang kilo.\nAnak: Eh Nay, ang halaga po?\nNanay: Basta bumili ka na lang!
+Pedro: Pare, bakit nakasimangot ka?\nJuan: Kasi nahulog ang pera ko.\nPedro: Magkano?\nJuan: Barya lang.\nPedro: Eh bakit ka malungkot?\nJuan: Kasi barya-barya lang ang natira.
+Lola: Apo, tumulong ka sa pagluto.\nApo: Sige po, Lola. Ano ang gagawin ko?\nLola: Maghugas ka ng kamay.\nApo: Tapos na po, Lola.\nLola: Eh bakit hindi pa luto?
+Estudyante: Teacher, may sagot na po ako!\nTeacher: Ano?\nEstudyante: Hindi ko pa po alam ang tanong.
+Juan: Mahal, may sorpresa ako.\nMaria: Ano 'yon?\nJuan: Bukas, magpapakasal na tayo.\nMaria: Totoo?\nJuan: Hindi, nagbibiro lang ako.
+Pedro: Alam mo ba kung anong oras na?\nJuan: Hindi, wala akong relo.\nPedro: Eh bakit mo ako tinatanong kung wala kang orasan?
+Doktor: Ano ang masakit sa iyo?\nPasyente: Ang bulsa ko po, Doc.\nDoktor: Bakit?\nPasyente: Kasi po, wala nang laman.
+Nanay: Anak, bakit ka umiiyak?\nAnak: Kasi po, pinalo ako ng kuya.\nNanay: Bakit ka niya pinalo?\nAnak: Kasi po, pinalo ko muna siya.
+Mister: Mahal, bakit ang aga mong gumising?\nMisis: Kasi po, maaga akong naglalaba.\nMister: Eh bakit hindi ako ginising?\nMisis: Para hindi ka magreklamo.
+Teacher: Ano ang pangunahing pagkain ng Pilipino?\nEstudyante: Kanin po, ma'am.\nTeacher: Eh ang ulam?\nEstudyante: Kanin din po, kapag wala nang pera.
+Juan: Anong paborito mong kanta?\nPedro: "Bahay Kubo."\nJuan: Bakit?\nPedro: Kasi may sampung gulay, wala akong kinakain kahit isa.
+Pedro: Pare, anong tawag sa pagong na walang sapin sa paa?\nJuan: Hindi ko alam.\nPedro: Eh di pagong, wala namang sapin ang pagong.
+Customer: May available po bang tinapay?\nTindera: Opo, ma'am.\nCustomer: Magkano?\nTindera: Piso po.\nCustomer: Eh kahapon po?\nTindera: Kahapon, piso rin po. Hindi po nagbabago ang pandesal.
+Juan: Pare, hiniram ko ang payong mo.\nPedro: Eh ibalik mo na.\nJuan: Nasira na po, nahulog sa baha.\nPedro: Eh bakit mo ako tinatanong kung hiram ko?
+Nanay: Bakit ang dumi ng kamay mo?\nAnak: Nay, naglaro po ako ng putik.\nNanay: Eh bakit ka natutuwa?\nAnak: Kasi po, putik na lang ang libre.
+Teacher: Ano ang pinakamalaking karagatan?\nEstudyante: Pacific po.\nTeacher: Eh ang pinakamalalim?\nEstudyante: Ang utang ko po, ma'am.
+Boss: Bakit ang dami mong absent?\nEmpleyado: Kasi po, ang dami kong problema.\nBoss: Eh bakit hindi mo ito resolbahin?\nEmpleyado: Sir, nag-absent po ako para magresolba.
+Pedro: Pare, kamusta na ang negosyo mo?\nJuan: Mabuti naman, may kita na.\nPedro: Magkano?\nJuan: Hindi ko pa nabibilang, kasi barya pa.
+Asawa: Mahal, saan tayo kakain?\nMister: Kahit saan.\nAsawa: Sa Jollibee?\nMister: Ayoko.\nAsawa: Sa McDo?\nMister: Ayoko.\nAsawa: Eh sabi mo kahit saan?\nMister: Pero hindi 'yan.
+Bata: Ma, ano po ang kinakain ng isda?\nNanay: Plankton, anak.\nBata: Eh bakit po ako hindi pwedeng kumain ng plankton?\nNanay: Kasi hindi ka isda.
+Guro: Ano ang pangunahing gamit ng bibig?\nEstudyante: Para po kumain at magsabi ng "po", ma'am.
+Pasahero: Manong, bakit ang dilim ng jeep?\nDriver: Kasi po, sir, wala pong ilaw.\nPasahero: Eh bakit hindi niyo ayusin?\nDriver: Wala rin po akong ilaw para makita ang sira.
+Juan: Pare, ano ang paborito mong oras?\nPedro: Alas-singko ng hapon.\nJuan: Bakit?\nPedro: Kasi uwian na.
+Doktor: Magpahinga ka ng isang linggo.\nPasyente: Doc, Lunes po ngayon.\nDoktor: Eh di bumalik ka sa Lunes.
+Teacher: Bakit ka nahuli?\nEstudyante: Ma'am, nakalimutan ko po ang oras.\nTeacher: Eh bakit ang bilis mong lumakad?\nEstudyante: Para po maabutan ang nakalimutan kong oras.
+Nanay: Anak, linisin mo ang kuwarto mo.\nAnak: Nay, malinis naman po.\nNanay: Eh bakit hindi ko makita ang sahig?\nAnak: Kasi po, nakatago po ang dumi.
+Juan: Pare, ang pangit ng cellphone mo.\nPedro: Hindi ah, maganda 'yan.\nJuan: Eh bakit ang laki ng crack?\nPedro: Para daw may design.
+Customer: Manong, paki-balot nga.\nTindero: Ano po ang ibabalot?\nCustomer: Ako po, giniginaw ako.
+Boss: Ano ang pinakamalaking problema ng kumpanya natin?\nEmpleyado: Ako po, sir.\nBoss: Bakit?\nEmpleyado: Kasi po, ako ang sweldo.
+Pedro: Pare, may sakit ako.\nJuan: Ano 'yon?\nPedro: Sakit ng ulo.\nJuan: Eh uminom ka ng gamot.\nPedro: Eh ang sakit ay ang pamilya ko.
+Anak: Nay, gusto ko pong maging doktor.\nNanay: Bakit?\nAnak: Para po may pambili ng gamot ko.
+Teacher: Magbigay ng halimbawa ng pandiwa.\nEstudyante: Kumain po.\nTeacher: Ibang halimbawa.\nEstudyante: Kumain ulit po.
+Juan: Pare, bakit parang malungkot ka?\nPedro: Wala kasing pagkain.\nJuan: Eh bakit ang saya mo kahapon?\nPedro: Kasi may pagkain kahapon.
+Nanay: Anak, bakit ang daming bote?\nAnak: Nay, para po sa project.\nNanay: Bakit may laman?\nAnak: Kasi po, kailangan daw po ng "content."
+Estudyante: Teacher, bakit po ang daming tanong sa exam?\nTeacher: Kasi exam po ito.\nEstudyante: Eh bakit po walang sagot?\nTeacher: Kasi ikaw ang sasagot.
+Pedro: Pare, saan ka pupunta?\nJuan: Sa tindahan.\nPedro: Ano bibilhin mo?\nJuan: Hindi ko pa alam, titingnan ko muna kung may pera ako.
+Doktor: Mag-exercise ka araw-araw.\nPasyente: Doc, nag-e-exercise na po ako.\nDoktor: Ano ginagawa mo?\nPasyente: Naglalakad po papunta sa ref.
+Boss: Bakit ka laging may kape?\nEmpleyado: Kasi po, sir, ito ang aking "fuel."\nBoss: Eh bakit hindi ka pa gising?\nEmpleyado: Kasi po, decaf.
+Juan: Pare, ang dami kong utang.\nPedro: Magkano?\nJuan: Hindi ko alam, hindi ko pa nababasa ang mga resibo.
+Teacher: Bakit ka sumasagot ng pabalang?\nEstudyante: Ma'am, hindi po ako pabalang, tinanong lang po ako.
+Mister: Mahal, bakit ang dami mong sapatos?\nMisis: Kasi po, marami akong paa.\nMister: Dalawa lang ang paa mo.\nMisis: Eh iba-iba ang mood ko.
+Pedro: Pare, ano ang magandang regalo sa girlfriend?\nJuan: Pera.\nPedro: Bakit?\nJuan: Kasi siya na ang pipili.
+Nanay: Anak, bakit ang taas ng boses mo?\nAnak: Nay, kasi po malayo kayo.\nNanay: Eh bakit hindi ka lumapit?\nAnak: Kasi po, mas malayo ang tawag.
+Customer: Magkano ang bigas?\nTindera: Singkwenta po.\nCustomer: Eh kahapon po?\nTindera: Singkwenta rin, ma'am. Hindi po tayo magkakalokohan.
+Guro: Ilan ang bituin sa langit?\nEstudyante: Hindi ko po alam, ma'am.\nGuro: Bakit?\nEstudyante: Kasi po, araw ngayon.
+Anak: Tay, ano po ang trabaho ninyo?\nTatay: Nagtatrabaho para sa inyo.\nAnak: Eh bakit po ang dami niyong utang?\nTatay: Kasi marami kayo.
+Pedro: Pare, bakit ka nagsusuot ng helmet sa loob ng bahay?\nJuan: Kasi pag-uwi ni misis, baka may lumipad.
+Juan: Mahal, may problema tayo.\nMaria: Ano?\nJuan: Ubos na ang pera natin.\nMaria: Eh di mag-ipon tayo.\nJuan: Paano?\nMaria: Mag-ipon tayo ng problema.
+Estudyante: Ma'am, may utang po ako sa inyo.\nTeacher: Ano?\nEstudyante: Utang na loob po sa pagtuturo.
+Doktor: Ano ang ginagawa mo sa gabi?\nPasyente: Natutulog po.\nDoktor: Eh sa umaga?\nPasyente: Natutulog din po.\nDoktor: Eh sa tanghali?\nPasyente: Gising po, Doc, kumakain.
+Pedro: Pare, may lakad ba tayo bukas?\nJuan: Wala. Pero kung magkakaroon, sabihin ko sa'yo.\nPedro: Kailan?\nJuan: Pag nagkaroon na ng lakad.
+Boss: Bakit hindi mo tinapos ang report?\nEmpleyado: Sir, tinapos ko po.\nBoss: Nasaan?\nEmpleyado: Sa isip ko po, sir.
+Nanay: Anak, magdasal ka bago matulog.\nAnak: Opo, Nay.\nNanay: Ano ang ipinagdasal mo?\nAnak: Sana po ay walang pasok bukas.
+Pedro: Pare, may crush ako.\nJuan: Sino?\nPedro: Hindi ko sasabihin.\nJuan: Eh bakit mo sinabi?\nPedro: Para malaman mo na may crush ako.
+Tindero: Sir, sariwa po ang isda ngayon.\nCustomer: Bakit amoy-bulok?\nTindero: Sir, sariwang bulok po.
+Anak: Nay, bakit po maliit ang ulam?\nNanay: Para maganda ang pangarap mo na kumain ng marami.
+Pedro: Anong tawag sa taong hindi marunong magsinungaling?\nJuan: Hindi ko alam.\nPedro: Wala pa akong nakilala.
+Guro: Sino ang nakaimbento ng bumbilya?\nEstudyante: Si Edison po.\nGuro: Eh ang telepono?\nEstudyante: Si Edison din po, para po tawagan ang bumbilya.
+Juan: Pare, bakit ka late?\nPedro: Kasi nasira ang jeep.\nJuan: Eh bakit hindi ka bumaba?\nPedro: Kasi po, mas nakakahiyang tumulak.
+Teacher: Mag-isip ka ng salita na nagsisimula sa A.\nEstudyante: Araw po.\nTeacher: Isa pa.\nEstudyante: Ang... araw po ulit.
+Boss: Bakit ang dami mong sinasabi?\nEmpleyado: Kasi po, sir, kulang po ang sweldo ko sa mga salita.
+Pedro: Pare, gusto kong maging mayaman.\nJuan: Eh anong gagawin mo?\nPedro: Maghihintay ako.\nJuan: Hanggang kailan?\nPedro: Hanggang may magbigay.
+Nanay: Anak, kumain ka na ba?\nAnak: Opo, Nay.\nNanay: Ano ang ulam?\nAnak: Hangin po.
+Anong tawag sa isda na laging nagmamadali?\nEdi, Fast Fish... este, Isdang Bilis.
+Anong sabi ng lapis sa papel?\n“Ikaw ang naging bahagi ng bawat kuwento ko.”
+Bakit hindi pwedeng mag-away ang dalawang kandila?\nKasi parehong matutunaw ang puso nila.
+Anong tawag sa manok na nag-aral?\nEdi, Chicken Intelligence!
+Bakit malungkot ang kalendaryo?\nKasi bilang na ang araw niya.
+Bakit mahilig magbasa ang payong?\nKasi lagi siyang may "cover."
+Anong tawag sa kape na galit?\nEdi, Kapeng Bruskò.
+Bakit mabilis tumakbo ang oras kapag weekend?\nKasi ayaw nitong maabutan ng Lunes.
+Ano ang pinakamabilis na sasakyan?\nAng "sana all" kapag may sweldo.
+Bakit laging tahimik ang ref?\nKasi cool lang siya.
+Bakit hindi nagsasalita ang aircon?\nKasi mas gusto niyang manatiling cool.
+Bakit laging pagod ang bentilador?\nKasi buong araw siyang umiikot.
+Anong sabi ng kanin sa ulam?\n“Ikaw ang bida, ako ang laging kasama.”
+Ano ang paboritong subject ng bangka?\nAng "Floating Point."
+Bakit magaling sa Math ang manok?\nKasi marunong siyang magbilang ng itlog.
+Anong tawag sa baboy na mahilig sa bola?\nEdi, Pork-ball.
+Bakit hindi mahilig mag-gym ang kuhol?\nKasi mabagal ang progress niya.
+Bakit mahilig sa sports ang pusa?\nKasi magaling siyang mag-"cat-ch."
+Bakit hindi nagtatago ang unggoy?\nKasi nahuhuli siya palagi ng saging.
+Anong tawag sa aso na marunong mag-gitara?\nEdi, Rock-tweiler.
+Anong sabi ng bola sa player?\n“Ayoko nang pinapasa-pasa ako.”
+Anong sabi ng gulong sa kalsada?\n“Kapag walang ikaw, wala akong direksyon.”
+Bakit hindi pwedeng magtago ang elepante sa puno?\nKasi ang laki ng tenga niyang nakalabas.
+Bakit mahusay sa negosyo ang buwaya?\nKasi marunong siyang "mag-bite" ng opportunity.
+Bakit mahilig kumanta ang palaka?\nKasi may talento siya sa "kokak."
+Ano ang tawag sa bahay ng pusa?\nEdi, Meow-seum.
+Anong sabi ng suklay sa buhok?\n“Huwag kang mag-alala, aayusin kita.”
+Anong sabi ng sapatos sa medyas?\n“Bakit amoy-pagod ka?”
+Anong tawag sa hotdog na nagmamadali?\nEdi, Hotdog-run.
+Bakit hindi mahilig mag-travel ang sibuyas?\nKasi madaling umiyak sa airport.
+Ano ang paboritong sayaw ng gulay?\nAng "Talong-go."
+Bakit galit ang kamatis?\nKasi pulang-pula na naman siya.
+Bakit sikat ang itlog?\nKasi maraming nagpapa-"fried" sa kanya.
+Anong tawag sa gatas na nagmamadali?\nEdi, Milk-Run.
+Ano ang pinakamalungkot na prutas?\nAng Aprikot, kasi "a-pri-cot" tulog lang siya.
+Bakit mabilis magising ang kape?\nKasi laging "alert" ang caffeine.
+Bakit laging pagod ang gripo?\nKasi laging bukas ang daloy ng tao sa kanya.
+Bakit mahilig sa balita ang radyo?\nKasi laging nakikinig ang tao sa kanya.
+Bakit laging tahimik ang TV?\nKasi mas gusto niyang may nanonood.
+Bakit hindi nagagalit ang pinto?\nKasi lagi siyang may "lock" na pasensya.
+Anong sabi ng bintana sa kurtina?\n“Salamat sa pagtatakip ng ating mga sikreto.”
+Ano ang paboritong pagkain ng computer?\nChips, syempre!
+Bakit mabagal ang computer ni Juan?\nKasi dami niyang "tabs"... sa buhay.
+Anong sabi ng cellphone sa charger?\n“Ikaw lang ang bumubuhay sa akin.”
+Anong sabi ng WiFi sa cellphone?\n“Hindi kita kayang abutin kapag nasa malayo ka.”
+Anong tawag sa sundalong takot sa dilim?\nEdi, Private Ilaw.
+Bakit hindi nakapasa ang magnanakaw sa interview?\nKasi wala siyang "references."
+Bakit hindi mahilig sa pasyal ang aklat?\nKasi laging nakasara ang schedule niya.
+Bakit lagi nang may pera si Juan?\nKasi hindi siya nagbabayad ng utang.
+Bakit mahilig magtanong ang bata?\nKasi ang daming "bakit" sa mundo.
+Bakit hindi nag-aaral ang buwan?\nKasi gabi lang siya lumalabas.
+Bakit maaga ang araw?\nKasi ayaw niyang ma-late sa trabaho.
+Bakit mahilig magtago ang araw sa ulap?\nKasi nahihiya siyang magpa-picture.
+Anong tawag sa ulan na tahimik?\nEdi, "Shhh-ower".
+Anong sabi ng bulaklak sa bubuyog?\n“Huwag mo akong iwan, namumukadkad pa ako.”
+Anong sabi ng isda sa kapwa isda?\n“Mag-ingat tayo sa bingwit.”
+Bakit hindi nagtatalo ang pamilya ni Mang Juan?\nKasi lagi silang kumakain ng sabay.
+Bakit mahilig mag-ipon ang alkansya?\nKasi puno ng pangarap ang laman niya.
+Bakit hindi nagsisinungaling ang salamin?\nKasi nakikita niya lahat.
+Bakit mabilis maubos ang pandesal?\nKasi mainit pa, masarap pa.
+Anong sabi ng mainit na kape sa umaga?\n“Ako ang dahilan kung bakit ka gising.”
+Anong tawag sa tinapay na nag-aral?\nEdi, Bread-uate.
+Bakit mahilig ang tao sa sinigang?\nKasi laging maasim ang buhay, kaya may kasama.
+Bakit hindi mawawala ang adobo sa mesa?\nKasi hindi siya nauubusan ng fans.
+Anong tawag sa lumpia na natatakot?\nEdi, Lumpia-nginig.
+Bakit malungkot ang sisig?\nKasi laging sinasabing "mainit" ang ulo niya.
+Bakit sikat ang halo-halo?\nKasi lahat ay pwedeng sumali.
+Anong sabi ng turon sa saging?\n“Ang tamis mo naman, pero ako ang bida sa merienda.”
+Bakit laging may kasama ang pandesal?\nKasi mahilig siya sa kape.
+Ano ang pinakapaboritong sport ng bangus?\nAng "swimming."
+Bakit mahilig mag-ipon ang langgam?\nKasi nag-aabang siya ng tag-ulan.
+Anong tawag sa kuliglig na may talent?\nEdi, Cricket Idol.
+Bakit hindi nahuhuli ang daga?\nKasi mabilis siyang tumakbo sa problema.
+Bakit gising ang kuwago kapag gabi?\nKasi siya ang night shift ng kalikasan.
+Anong sabi ng lamok sa tao?\n“Dugo-dugo lang, hindi naman sapilitan.”
+Bakit hindi nakakapagtago ang ilaw?\nKasi laging may nakakakita sa kanya.
+Ano ang sabi ng walis sa dumi?\n“Huwag ka nang magtago, nakikita na kita.”
+Anong sabi ng sabon sa maruming kamay?\n“Magkakilala na tayo, ‘di ba?”
+Bakit laging basa ang sabon?\nKasi lagi siyang nasa "ligo" mode.
+Bakit hindi nagtatampo ang unan?\nKasi lagi siyang niyayakap.
+Bakit matapang ang kumot?\nKasi hindi siya natatakot sa lamig.
+Bakit laging may bagong kuwento ang tsismosa?\nKasi may "source" siya sa kapitbahay.
+Ano ang pinakamabilis na balita sa barangay?\nAng tsismis, mas mabilis pa sa Wi-Fi.
+Bakit mahilig mag-videoke ang mga Pilipino?\nKasi lahat ng problema, kakantahin.
+Bakit laging naka-"My Way" ang videoke?\nKasi ito ang huling kanta bago may away.
+Anong tawag sa kapitbahay na laging nakikinig ng videoke?\nEdi, Libreng Concert Attendee.
+Bakit hindi pwedeng mawala ang tsinelas sa bahay?\nKasi siya ang tunay na pamilya ng paa.
+Bakit pwedeng gamitin ang tsinelas sa lahat?\nKasi siya ang pinaka-"versatile" sa pamilya.
+Anong sabi ng nanay habang hawak ang tsinelas?\n“Isa... dalawa...” at tumakbo na ang anak.
+Bakit mahilig mag-"Sana All" ang tao?\nKasi lagi nilang gustong sumali sa saya.
+Bakit mabilis ang jeepney?\nKasi may lakas ng loob ang driver.
+Bakit laging siksikan sa jeep?\nKasi lahat gustong magkaroon ng kaibigan.
+Bakit laging may "Para po" sa jeep?\nKasi hindi marunong magbasa ng isip ang driver.
+Anong sabi ng barya sa jeep?\n“Abot-abot tayo, huwag lang akong mawala.”
+Bakit laging masaya ang tricycle?\nKasi lagi siyang may sakay na kuwento.
+Bakit mabilis dumaan ang weekend?\nKasi hindi pwedeng mag-extend.
+Bakit mahaba ang Lunes?\nKasi bitbit niya lahat ng nakaraang Linggo.
+Anong paboritong araw ng empleyado?\nAng sweldo, siyempre.
+Bakit mabilis maubos ang sweldo?\nKasi mahilig itong mag-"hello" at "goodbye" sa isang araw.
+Bakit parang tubig ang pera?\nKasi umaagos palabas sa bulsa.
+Bakit hindi mahilig ang pera sa bulsa ko?\nKasi laging naghahanap ng mas magandang bahay.
+Bakit ang bilis ng oras sa lunch break?\nKasi kasama niya ang ulam.
+Anong sabi ng ulam sa kanin?\n“Hindi tayo magkakahiwalay, kakainin tayo ng sabay.”
+Anong tawag sa empleyadong laging may meeting?\nEdi, Meeting Master.
+Bakit gustong-gusto ng boss ang deadline?\nKasi siya lang ang hindi nagmamadali.
+Bakit hindi nalulungkot ang electrician?\nKasi marunong siyang magbigay ng liwanag.
+Bakit mabilis ang kamay ng electrician?\nKasi ayaw niyang ma-shock sa tagal.
+Anong sabi ng wire sa electrician?\n“Basta ligtas, handa akong maging connected.”
+Anong sabi ng breaker sa overload?\n“Tama na, napapagod na ako.”
+Anong tawag sa safety officer na sobrang higpit?\nEdi, Mr. Walang-Padaan-Kung-Walang-Helmet.
+Bakit hindi nagagalit ang foreman?\nKasi lagi siyang kalmado, parang hard hat.
+Bakit mahalaga ang helmet?\nKasi mas mahirap ang masakit na ulo kaysa sa mainit na ulo.
+Bakit ligtas ang may suot na safety shoes?\nKasi hindi sila madulas sa problema.
+Anong sabi ng hard hat sa ulo?\n“Ako na ang bahala sa iyo.”
+Bakit mabigat ang trabaho ng engineer?\nKasi pasan niya ang buong plano.
+Bakit hindi nagkakamali ang engineer?\nKasi lagi siyang may "revision."
+Bakit mahilig sa drawing ang engineer?\nKasi doon siya pinakamalikhain, sa papel.
+Bakit sikat ang supervisor?\nKasi lahat ng tao ay naghahanap sa kanya.
+Bakit hindi pwedeng walang kape sa site?\nKasi walang lakas ang trabaho kapag walang enerhiya.
+Bakit mabilis ang trabaho kapag may pagkain?\nKasi mas masipag ang tiyan kaysa sa kamay.
+Bakit laging may toolbox talk?\nKasi mas mabuting makinig kaysa maospital.
+Bakit hindi nagtatago ng problema ang magaling na worker?\nKasi alam niyang mas malaki ito kapag natatago.
+Anong tawag sa tubero na masaya?\nEdi, Plumber-ing Joy.
+Bakit mahusay magbasa ang karpintero?\nKasi laging nakatingin sa linya.
+Bakit magaling ang mason sa pasensya?\nKasi dahan-dahan ang pagtatayo ng pader.
+Bakit hindi nasisira ang pagkakaibigan sa trabaho?\nKasi may kape, may tawa, may kasama.
+Anong sabi ng martilyo sa pako?\n“Kahit masakit, kailangan nating magkasama.”
+Bakit maingay ang drill?\nKasi gusto niyang marinig ng lahat ang trabaho niya.
+Anong sabi ng hagdan sa tao?\n“Dahan-dahan lang, may kasunod pa ang hakbang.”
+Bakit mabilis magtampo ang sukat?\nKasi laging "kulang" ang bilang niya.
+Ano ang tawag sa taong laging nagmamadali sa site?\nEdi, Mr. Hurry-Hurt.
+Bakit hindi pwedeng magmadali sa trabaho?\nKasi mas mabilis ang aksidente kaysa sa ambulansya.
+Bakit masarap umuwi ng ligtas?\nKasi may naghihintay na hapunan at yakap.
+Anong sabi ng kama sa pagod na worker?\n“Welcome home, pahinga ka na.”
+Bakit mahalaga ang tulog?\nKasi doon nagre-recharge ang baterya ng buhay.
+Anong sabi ng unang sinag ng araw?\n“Gising na, may bagong simula ngayon.”
+Bakit parang sinag ng araw ang ngiti?\nKasi pinapaliwanag nito ang mundo.
+Bakit mahalaga ang pasasalamat?\nKasi libre ito, pero mas mahal pa sa ginto.
+Bakit masarap ang pagkain kapag may kasama?\nKasi ang tawa ang pampalasa.
