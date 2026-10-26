@@ -265,7 +265,7 @@ th {
   position: relative; overflow: hidden; color: #fff; border-radius: 12px;
   padding: 32px 28px 28px;
   background:
-    radial-gradient(900px 260px at 85% -30%, rgba(224, 180, 65, 0.3), transparent 60%),
+    radial-gradient(900px 260px at 85% -30%, var(--glow, rgba(224, 180, 65, 0.3)), transparent 60%),
     linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
 }
 .hero::before {
@@ -279,18 +279,26 @@ th {
 }
 .hero::after {
   content: ""; position: absolute; left: 0; right: 0; top: 0; height: 8px;
-  background: repeating-linear-gradient(90deg, var(--red) 0 22px, var(--gold) 22px 44px, #1f7a4a 44px 66px);
+  background: repeating-linear-gradient(90deg, var(--red) 0 22px, var(--gold) 22px 44px, var(--stripe3, #1f7a4a) 44px 66px);
 }
+.no-dots .hero::before { display: none; }
 .hero > * { position: relative; z-index: 1; }
+/* Falling icons (pumpkins, hearts...) added by themes.js */
+.hero > .hero-fx { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.hero-fx span { position: absolute; top: -40px; opacity: 0.45; animation: fall linear infinite; }
+@keyframes fall {
+  from { transform: translateY(0) rotate(0deg); }
+  to { transform: translateY(340px) rotate(25deg); }
+}
 @keyframes snow {
   from { background-position: 0 0, 0 0, 0 0; }
   to { background-position: 20px 120px, -15px 80px, 30px 170px; }
 }
-@media (prefers-reduced-motion: reduce) { .hero::before { animation: none; } .carousel-track { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { .hero::before { animation: none; } .hero-fx span { animation: none; } .carousel-track { transition: none !important; } }
 .hero-kicker { font-size: 14px; opacity: 0.85; }
 .hero-title { margin: 4px 0 6px; font-size: 34px; line-height: 1.15; color: #fff; }
 .hero-sub { margin: 0 0 12px; max-width: 60ch; opacity: 0.92; }
-.xmas-chip { display: inline-block; padding: 4px 14px; border-radius: 999px; background: var(--gold); color: #3b2a00; font-weight: 700; font-size: 14px; }
+.xmas-chip { display: inline-block; padding: 4px 14px; border-radius: 999px; background: var(--gold); color: var(--chip-text, #3b2a00); font-weight: 700; font-size: 14px; }
 .xmas-chip[hidden] { display: none; }
 
 .home-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: stretch; }

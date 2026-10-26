@@ -9,18 +9,13 @@
     return n;
   }
 
-  // ---------- Hero: greeting, date, Christmas countdown ----------
+  // ---------- Hero: greeting and date ----------
   function initHero() {
     const now = new Date();
     const h = now.getHours();
     $("heroTitle").textContent = (h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") + ", team!";
     $("heroDate").textContent = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const days = Math.round((new Date(now.getFullYear(), 11, 25) - today) / 86400000);
-    const chip = $("xmasChip");
-    chip.textContent = days > 0 ? days + (days === 1 ? " day" : " days") + " until Christmas" : days === 0 ? "Merry Christmas!" : "Season's greetings";
-    chip.hidden = false;
+    // The event chip (countdown) is now handled by themes.js
   }
 
   // ---------- Daily inspiration: verse, jokes and quotes ----------
