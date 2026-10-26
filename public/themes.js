@@ -23,6 +23,53 @@ const VARIANT = 4;
 
 
 /* ============================================================
+   BACKGROUND IMAGES (optional)
+   ------------------------------------------------------------
+   1. Put your pictures in the folder:  public/images/themes/
+   2. Write the file name between the quotes below, for example:
+        "halloween": "/images/themes/halloween.jpg",
+      Leave "" (empty) to use only the theme colors.
+
+   BANNER_IMAGES = picture behind the top banner of the Home page
+   PAGE_IMAGES   = picture behind the whole Home page
+
+   You can also use one picture for a single look only, by writing
+   the event name, a dash and the look number, for example:
+        "halloween-2": "/images/themes/haunted.jpg",
+   (that one wins over the plain "halloween" line)
+
+   BANNER_SHADE  = 0 to 1, how dark the banner picture is made so the
+                   white text stays readable (0 = none, 0.5 = medium)
+   PAGE_FADE     = 0 to 1, how much the page picture is faded toward
+                   white so the cards stay readable (0.85 = very light)
+   ============================================================ */
+const BANNER_IMAGES = {
+  "new-year": "",
+  "valentines": "",
+  "holy-week": "",
+  "labor-day": "",
+  "independence-day": "",
+  "buwan-ng-wika": "",
+  "halloween": "/images/themes/halloween.jpg",
+  "bonifacio-day": "",
+  "christmas": ""
+};
+const PAGE_IMAGES = {
+  "new-year": "",
+  "valentines": "",
+  "holy-week": "",
+  "labor-day": "",
+  "independence-day": "",
+  "buwan-ng-wika": "",
+  "halloween": "/images/themes/halloween.jpg",
+  "bonifacio-day": "",
+  "christmas": ""
+};
+const BANNER_SHADE = 0.45;
+const PAGE_FADE = 0.50;
+
+
+/* ============================================================
    Everything below is the theme data. You normally do not need
    to touch it, except to edit a message or a color.
 
@@ -232,6 +279,37 @@ const VARIANT = 4;
     if (!ev.dots) body.classList.add("no-dots");
 
     // (the header keeps the company colors, so the theme only changes the Home page)
+
+    // Background pictures (see BANNER_IMAGES / PAGE_IMAGES at the top of this file)
+    function pickImage(map) {
+      return map[key + "-" + (idx + 1)] || map[key] || "";
+    }
+    function cssUrl(path) { return 'url("' + String(path).replace(/"/g, "%22") + '")'; }
+    var shade = Math.min(Math.max(Number(BANNER_SHADE) || 0, 0), 1);
+    var fade = Math.min(Math.max(Number(PAGE_FADE) || 0, 0), 1);
+
+    var bannerImg = pickImage(BANNER_IMAGES);
+    var heroEl = document.querySelector(".hero");
+    if (bannerImg && heroEl) {
+      var d = rgb(look[2]).join(",");
+      heroEl.style.backgroundColor = look[2];
+      heroEl.style.backgroundImage =
+        "linear-gradient(rgba(" + d + "," + shade + "), rgba(" + d + "," + shade + ")), " + cssUrl(bannerImg);
+      heroEl.style.backgroundSize = "cover";
+      heroEl.style.backgroundPosition = "center";
+      heroEl.style.backgroundRepeat = "no-repeat";
+      body.classList.add("has-banner-image");
+    }
+
+    var pageImg = pickImage(PAGE_IMAGES);
+    if (pageImg) {
+      body.style.backgroundImage =
+        "linear-gradient(rgba(243,246,250," + fade + "), rgba(243,246,250," + fade + ")), " + cssUrl(pageImg);
+      body.style.backgroundSize = "cover";
+      body.style.backgroundPosition = "center";
+      body.style.backgroundAttachment = "fixed";
+      body.classList.add("has-page-image");
+    }
 
     var sub = document.getElementById("heroSub");
     if (sub && ev.sub) sub.textContent = ev.sub;
