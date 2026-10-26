@@ -510,3 +510,21 @@ body .view-toggle button[aria-pressed="true"] { background: var(--brand-blue); b
 
 /* Home: "Open ..." links on the glance tiles (the Christmas colors stay) */
 .glance-more { color: var(--brand-blue); }
+
+
+/* ============================================================
+   THEME BANNER ON DASHBOARD PAGES (added by themes.js)
+   ============================================================ */
+.theme-strip { max-width: 1600px; margin: 0 auto; padding: 20px 28px 0; }
+.theme-banner {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 14px 20px; background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+}
+.theme-banner::after { height: 5px; }
+.theme-banner-title { font-size: 18px; color: #fff; }
+.theme-banner .hero-fx span { top: -30px; }
+@media (max-width: 640px) {
+  .theme-strip { padding: 14px 16px 0; }
+  .theme-banner { padding: 12px 14px; }
+}
+@media print { .theme-strip { display: none; } body { background-image: none !important; } }

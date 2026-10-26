@@ -70,6 +70,53 @@ const PAGE_FADE = 0.50;
 
 
 /* ============================================================
+   DASHBOARD PAGES (Cable Status, S-Curve, Daily Activities)
+   ------------------------------------------------------------
+   The same theme can also decorate the dashboard pages.
+
+   DASHBOARD_THEME  = true / false   turn the theme on the dashboards
+                                     on or off (false = plain pages)
+   DASHBOARD_BANNER = true / false   show a slim themed banner on top
+                                     of each dashboard
+   DASHBOARD_BANNER_IMAGES / DASHBOARD_PAGE_IMAGES
+                    = pictures, same way as the Home page lists above
+   DASHBOARD_BANNER_SHADE / DASHBOARD_PAGE_FADE = same meaning as above
+
+   Pictures for ONE dashboard only: add "@" and the page name:
+        "halloween@s-curve": "/images/themes/bats.jpg",
+        "halloween-2@daily": "/images/themes/night.jpg",
+   page names:  cable-status   s-curve   daily
+   Order of priority: "event-look@page", "event@page", "event-look", "event"
+   ============================================================ */
+const DASHBOARD_THEME = true;
+const DASHBOARD_BANNER = true;
+const DASHBOARD_BANNER_IMAGES = {
+  "new-year": "",
+  "valentines": "",
+  "holy-week": "",
+  "labor-day": "",
+  "independence-day": "",
+  "buwan-ng-wika": "",
+  "halloween": "",
+  "bonifacio-day": "",
+  "christmas": ""
+};
+const DASHBOARD_PAGE_IMAGES = {
+  "new-year": "",
+  "valentines": "",
+  "holy-week": "",
+  "labor-day": "",
+  "independence-day": "",
+  "buwan-ng-wika": "",
+  "halloween": "",
+  "bonifacio-day": "",
+  "christmas": ""
+};
+const DASHBOARD_BANNER_SHADE = 0.45;
+const DASHBOARD_PAGE_FADE = 0.92;
+
+
+/* ============================================================
    Everything below is the theme data. You normally do not need
    to touch it, except to edit a message or a color.
 
@@ -265,6 +312,12 @@ const PAGE_FADE = 0.50;
     var look = ev.looks[idx];
     var body = document.body;
 
+    // Which page are we on?
+    var path = location.pathname.replace(/\/index\.html$/, "/");
+    var isHome = path === "/";
+    var pageName = path.replace(/^\/+/, "").replace(/\.html$/, "");
+    if (!isHome && !DASHBOARD_THEME) return;
+
     var vars = {
       "--green": look[1],        // main
       "--green-dark": look[2],   // dark
@@ -278,31 +331,74 @@ const PAGE_FADE = 0.50;
     body.classList.add("theme-" + key, "look-" + (idx + 1));
     if (!ev.dots) body.classList.add("no-dots");
 
-    // (the header keeps the company colors, so the theme only changes the Home page)
+    // (the header keeps the company colors)
 
-    // Background pictures (see BANNER_IMAGES / PAGE_IMAGES at the top of this file)
+    // Picture lookup: "event-look@page", "event@page", "event-look", "event"
     function pickImage(map) {
-      return map[key + "-" + (idx + 1)] || map[key] || "";
+      var look1 = key + "-" + (idx + 1);
+      return (!isHome && (map[look1 + "@" + pageName] || map[key + "@" + pageName])) ||
+        map[look1] || map[key] || "";
     }
-    function cssUrl(path) { return 'url("' + String(path).replace(/"/g, "%22") + '")'; }
-    var shade = Math.min(Math.max(Number(BANNER_SHADE) || 0, 0), 1);
-    var fade = Math.min(Math.max(Number(PAGE_FADE) || 0, 0), 1);
+    function cssUrl(p) { return 'url("' + String(p).replace(/"/g, "%22") + '")'; }
+    function clamp01(v) { return Math.min(Math.max(Number(v) || 0, 0), 1); }
 
-    var bannerImg = pickImage(BANNER_IMAGES);
-    var heroEl = document.querySelector(".hero");
-    if (bannerImg && heroEl) {
+    // Chip text: countdown, greeting on the day, or an after-message
+    var date = eventDate(ev, today.getFullYear());
+    var diff = daysBetween(today, date);
+    var chipText = "";
+    if (diff > 0) chipText = diff + (diff === 1 ? " day" : " days") + " until " + ev.label;
+    else if (diff > -ev.span) chipText = ev.greet;
+    else chipText = ev.after || "";
+
+    // The banner: the big one on Home, a slim one on the dashboards
+    var hero = null;
+    if (isHome) {
+      hero = document.querySelector(".hero");
+      var sub = document.getElementById("heroSub");
+      if (sub && ev.sub) sub.textContent = ev.sub;
+      var chip = document.getElementById("xmasChip");
+      if (chip) { chip.textContent = chipText; chip.hidden = !chipText; }
+    } else if (DASHBOARD_BANNER) {
+      var main = document.querySelector("main");
+      if (main && main.parentNode) {
+        var strip = document.createElement("div");
+        strip.className = "theme-strip";
+        hero = document.createElement("section");
+        hero.className = "hero theme-banner";
+        hero.setAttribute("aria-label", ev.label);
+        var title = document.createElement("strong");
+        title.className = "theme-banner-title";
+        title.textContent = (ev.icons[0] ? ev.icons[0] + " " : "") + ev.label;
+        hero.appendChild(title);
+        if (chipText) {
+          var c2 = document.createElement("span");
+          c2.className = "xmas-chip";
+          c2.textContent = chipText;
+          hero.appendChild(c2);
+        }
+        strip.appendChild(hero);
+        main.parentNode.insertBefore(strip, main);
+      }
+    }
+
+    // Banner picture
+    var bannerImg = pickImage(isHome ? BANNER_IMAGES : DASHBOARD_BANNER_IMAGES);
+    if (bannerImg && hero) {
+      var shade = clamp01(isHome ? BANNER_SHADE : DASHBOARD_BANNER_SHADE);
       var d = rgb(look[2]).join(",");
-      heroEl.style.backgroundColor = look[2];
-      heroEl.style.backgroundImage =
+      hero.style.backgroundColor = look[2];
+      hero.style.backgroundImage =
         "linear-gradient(rgba(" + d + "," + shade + "), rgba(" + d + "," + shade + ")), " + cssUrl(bannerImg);
-      heroEl.style.backgroundSize = "cover";
-      heroEl.style.backgroundPosition = "center";
-      heroEl.style.backgroundRepeat = "no-repeat";
+      hero.style.backgroundSize = "cover";
+      hero.style.backgroundPosition = "center";
+      hero.style.backgroundRepeat = "no-repeat";
       body.classList.add("has-banner-image");
     }
 
-    var pageImg = pickImage(PAGE_IMAGES);
+    // Page picture
+    var pageImg = pickImage(isHome ? PAGE_IMAGES : DASHBOARD_PAGE_IMAGES);
     if (pageImg) {
+      var fade = clamp01(isHome ? PAGE_FADE : DASHBOARD_PAGE_FADE);
       body.style.backgroundImage =
         "linear-gradient(rgba(243,246,250," + fade + "), rgba(243,246,250," + fade + ")), " + cssUrl(pageImg);
       body.style.backgroundSize = "cover";
@@ -311,36 +407,20 @@ const PAGE_FADE = 0.50;
       body.classList.add("has-page-image");
     }
 
-    var sub = document.getElementById("heroSub");
-    if (sub && ev.sub) sub.textContent = ev.sub;
-
-    // Chip: countdown, greeting on the day, or an after-message
-    var chip = document.getElementById("xmasChip");
-    if (chip) {
-      var date = eventDate(ev, today.getFullYear());
-      var diff = daysBetween(today, date);
-      var text = "";
-      if (diff > 0) text = diff + (diff === 1 ? " day" : " days") + " until " + ev.label;
-      else if (diff > -ev.span) text = ev.greet;
-      else text = ev.after || "";
-      chip.textContent = text;
-      chip.hidden = !text;
-    }
-
     // Falling icons in the banner
-    var hero = document.querySelector(".hero");
     if (hero && ev.icons.length && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       var fx = document.createElement("div");
       fx.className = "hero-fx";
       fx.setAttribute("aria-hidden", "true");
-      for (var i = 0; i < 14; i++) {
-        var s = document.createElement("span");
-        s.textContent = ev.icons[i % ev.icons.length];
-        s.style.left = Math.round((i + Math.random() * 0.8) * (100 / 14)) + "%";
-        s.style.fontSize = (16 + Math.round(Math.random() * 14)) + "px";
-        s.style.animationDuration = (9 + Math.random() * 9).toFixed(1) + "s";
-        s.style.animationDelay = (-Math.random() * 14).toFixed(1) + "s";
-        fx.appendChild(s);
+      var count = isHome ? 14 : 8;
+      for (var i = 0; i < count; i++) {
+        var sp = document.createElement("span");
+        sp.textContent = ev.icons[i % ev.icons.length];
+        sp.style.left = Math.round((i + Math.random() * 0.8) * (100 / count)) + "%";
+        sp.style.fontSize = (isHome ? 16 + Math.round(Math.random() * 14) : 14 + Math.round(Math.random() * 8)) + "px";
+        sp.style.animationDuration = (9 + Math.random() * 9).toFixed(1) + "s";
+        sp.style.animationDelay = (-Math.random() * 14).toFixed(1) + "s";
+        fx.appendChild(sp);
       }
       hero.insertBefore(fx, hero.firstChild);
     }
