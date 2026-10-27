@@ -164,6 +164,14 @@
       if (Array.isArray(saved.off)) state.off = new Set(saved.off);
     }
   } catch (e) { /* ignore */ }
+  // Links from the Cable Status page: categories.html?zone=Zone1%20-%20RML&cat=Crane%20Cables
+  let pendingCat = null;
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.get("zone")) state.zone = q.get("zone");
+    if (q.get("cat")) pendingCat = q.get("cat");
+  } catch (e) { /* ignore */ }
+
   function saveChoice() {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify({ zone: state.zone, metric: state.metric, off: [...state.off] }));
@@ -398,6 +406,10 @@
         lastPayload = payload;
         data = json;
         history = Array.isArray(hist) ? hist : [];
+        if (pendingCat !== null) {
+          if (data.categories.includes(pendingCat)) state.off = new Set(data.categories.filter(c => c !== pendingCat));
+          pendingCat = null;
+        }
         $("reportDate").textContent = "Snapshot of " + data.date + " · " + data.cables + " LV cables";
         buildFilters();
         renderAll();

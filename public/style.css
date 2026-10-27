@@ -528,3 +528,39 @@ body .view-toggle button[aria-pressed="true"] { background: var(--brand-blue); b
   .theme-banner { padding: 12px 14px; }
 }
 @media print { .theme-strip { display: none; } body { background-image: none !important; } }
+
+
+/* ============================================================
+   LV CATEGORIES NESTED IN THE CABLE STATUS TABLE
+   ============================================================ */
+.table-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; }
+.table-tools[hidden] { display: none; }
+.tool-btn {
+  font: inherit; font-size: 13px; padding: 5px 12px; border: 1px solid #cbd5e1; border-radius: 6px;
+  background: #fff; color: #0f172a; cursor: pointer; box-shadow: none; font-weight: 600;
+}
+.tool-btn:hover { background: var(--brand-tint, #E6F0F9); }
+.zone-toggle {
+  font: inherit; font-weight: 700; padding: 4px 8px; margin: -4px -8px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--brand-blue, #0065B2); cursor: pointer; box-shadow: none; text-align: left;
+}
+.zone-toggle:hover { background: var(--brand-tint, #E6F0F9); }
+.zone-toggle:focus-visible { outline: 3px solid var(--brand-blue, #0065B2); outline-offset: 2px; }
+.zone-detail[hidden] { display: none; }
+.zone-detail > td { background: #f8fafc; padding: 8px 12px 14px 32px; }
+.cat-nested { overflow-x: auto; }
+.cat-nested table { border-collapse: collapse; width: 100%; font-size: 13px; white-space: nowrap; background: #fff; }
+.cat-nested th, .cat-nested td { padding: 8px 10px; }
+.cat-nested tfoot td, .cat-nested .cat-total td { font-weight: 800; background: #eef3f9; }
+.cat-nested a { color: var(--brand-blue, #0065B2); font-weight: 600; }
+.cat-nested .meter { display: inline-block; vertical-align: middle; width: 70px; height: 8px; margin-left: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+.cat-nested .meter > span { display: block; height: 100%; background: var(--brand-blue, #0065B2); }
+.cat-note { margin: 8px 0 0; white-space: normal; }
+@media (max-width: 640px) {
+  .zone-detail > td { padding: 8px 4px 12px; }
+  .cat-nested table, .cat-nested tbody, .cat-nested tfoot, .cat-nested tr, .cat-nested td { display: block; width: 100%; white-space: normal; }
+  .cat-nested thead { display: none; }
+  .cat-nested tr { border: 1px solid #d9e0e6; border-radius: 6px; padding: 6px 10px; margin-bottom: 8px; background: #fff; }
+  .cat-nested td { border: 0; padding: 3px 0; background: none !important; }
+  .cat-nested td::before { content: attr(data-label); display: block; font-size: 12px; opacity: 0.7; font-weight: 400; }
+}
