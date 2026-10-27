@@ -58,6 +58,14 @@
       .cat-table td::before { content: attr(data-label); display: block; font-size: 12px; opacity: 0.7; font-weight: 400; }
       .cat-table td.name-td::before { display: none; }
     }
+    .fold { padding: 0; }
+    .fold > summary { cursor: pointer; font-size: 18px; font-weight: 700; padding: 16px 20px; list-style: none; }
+    .fold > summary::-webkit-details-marker { display: none; }
+    .fold > summary::before { content: "\25B8  "; }
+    .fold[open] > summary::before { content: "\25BE  "; }
+    .fold[open] > summary .muted { display: none; }
+    .fold > :not(summary) { margin-left: 20px; margin-right: 20px; }
+    .fold > :last-child { margin-bottom: 20px; }
   </style>
 </head>
 <body>
@@ -99,16 +107,16 @@
       </div>
     </section>
 
-    <section class="panel" style="margin-top:20px">
-      <h2>Weekly trend</h2>
+    <details class="panel fold" id="trendFold" style="margin-top:20px">
+      <summary>Weekly trend <span class="muted">(click to show)</span></summary>
       <div class="trend-chart">
         <canvas id="trendChart" role="img" aria-label="Line chart of completeness over time for each selected category"></canvas>
       </div>
       <p class="muted note" id="trendNote"></p>
-    </section>
+    </details>
 
-    <section class="panel" style="margin-top:20px">
-      <h2>Detail</h2>
+    <details class="panel fold" id="detailFold" style="margin-top:20px">
+      <summary>Detail table <span class="muted">(click to show)</span></summary>
       <p class="muted">Overall = laying 80% + termination (from) 10% + termination (to) 10%. Cancelled cables are not counted.</p>
       <div class="table-wrap cat-table">
         <table>
@@ -126,7 +134,7 @@
           <tfoot id="catFoot"></tfoot>
         </table>
       </div>
-    </section>
+    </details>
 
     <p id="status">Connecting to category data...</p>
     <footer class="footer">PH PERTAMA · Internal Project Dashboard</footer>
@@ -152,6 +160,7 @@
   let lastPayload = "";
   let barChart = null;
   let trendChart = null;
+  document.getElementById("trendFold").addEventListener("toggle", () => { if (trendChart) trendChart.resize(); });
 
   const state = { zone: "all", metric: "overall", off: new Set() };
 
