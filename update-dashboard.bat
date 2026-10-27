@@ -19,7 +19,7 @@ if errorlevel 1 goto error
 
 echo.
 echo [3/3] Committing and pushing updates...
-git add dashboard-data.json scurve-data.json daily-data.json daily-history.json
+git add dashboard-data.json scurve-data.json daily-data.json daily-history.json category-data.json category-history.json
 if errorlevel 1 goto error
 git diff --cached --quiet
 if not errorlevel 1 (

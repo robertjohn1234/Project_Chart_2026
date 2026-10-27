@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { generateScurve } = require("./generate-scurve");
 const { generateDaily } = require("./generate-daily");
+const { generateCategories } = require("./generate-categories");
 
 const EXCEL_FILE = path.join(__dirname, "Cable Percentage -.xlsx");
 const OUTPUT_FILE = path.join(__dirname, "dashboard-data.json");
@@ -150,6 +151,10 @@ async function main() {
   // And the daily activities report (skipped if the Excel file is not there)
   console.log("");
   await generateDaily();
+
+  // And the LV category figures and their history (see generate-categories.js)
+  console.log("");
+  await generateCategories();
 }
 
 main().catch(error => {

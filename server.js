@@ -9,6 +9,8 @@ const DATA_FILE = path.join(__dirname, "dashboard-data.json");
 const SCURVE_FILE = path.join(__dirname, "scurve-data.json");
 const DAILY_FILE = path.join(__dirname, "daily-data.json");
 const DAILY_HISTORY_FILE = path.join(__dirname, "daily-history.json");
+const CATEGORY_FILE = path.join(__dirname, "category-data.json");
+const CATEGORY_HISTORY_FILE = path.join(__dirname, "category-history.json");
 
 // Optional: smaller downloads for big text files. Install once with:  npm install compression
 try { app.use(require("compression")()); } catch (error) { /* not installed: works fine without it */ }
@@ -61,6 +63,10 @@ app.get("/api/scurve", (req, res) => sendJsonFile(res, SCURVE_FILE));
 // Daily activities (today's report) and the saved day-by-day history
 app.get("/api/daily", (req, res) => sendJsonFile(res, DAILY_FILE));
 app.get("/api/daily-history", (req, res) => sendJsonFile(res, DAILY_HISTORY_FILE));
+
+// LV categories: current figures and the history of weekly snapshots
+app.get("/api/categories", (req, res) => sendJsonFile(res, CATEGORY_FILE));
+app.get("/api/category-history", (req, res) => sendJsonFile(res, CATEGORY_HISTORY_FILE));
 
 // Bulletin board: every sub-folder of public/images/bulletin is a tab, e.g. "Electrical Team".
 // Images placed directly in the bulletin folder go into a "General" tab.

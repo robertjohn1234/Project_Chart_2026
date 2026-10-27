@@ -4,7 +4,8 @@
   const DASHBOARDS = [
     { href: "/cable-status.html", label: "Cable Status" },
     { href: "/s-curve.html", label: "S-Curve" },
-    { href: "/daily.html", label: "Daily Activities" }
+    { href: "/daily.html", label: "Daily Activities" },
+    { href: "/categories.html", label: "LV Categories" }
   ];
 
   const path = location.pathname.replace(/\/index\.html$/, "/");

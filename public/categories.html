@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PH PERTAMA ISTC | LV Categories</title>
+  <meta name="description" content="PH PERTAMA internal project dashboard: LV cable completeness by category, with a weekly trend.">
+  <script src="/vendor/chart.umd.js"></script>
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    /* Styles used only on this page */
+    .filter-panel { display: grid; gap: 14px; }
+    .filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .filter-label { font-size: 13px; font-weight: 700; color: var(--muted); min-width: 74px; }
+    .seg { display: flex; flex-wrap: wrap; gap: 8px; }
+    .seg button, .cat-chips button, .mini-btn {
+      font: inherit; padding: 6px 14px; border: 1px solid #cbd5e1; border-radius: 6px;
+      background: #fff; color: #0f172a; cursor: pointer; box-shadow: none;
+    }
+    .seg button:hover, .cat-chips button:hover, .mini-btn:hover { background: #f1f5f9; }
+    .seg button[aria-pressed="true"] { background: var(--brand-blue, #0065B2); border-color: var(--brand-blue, #0065B2); color: #fff; }
+    .cat-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .cat-chips button { display: inline-flex; align-items: center; gap: 8px; }
+    .cat-chips .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c, #94a3b8); }
+    .cat-chips button[aria-pressed="false"] { opacity: 0.55; }
+    .cat-chips button[aria-pressed="true"] { border-color: var(--c, #0065B2); box-shadow: inset 0 0 0 1px var(--c, #0065B2); font-weight: 700; }
+    .mini-btn { padding: 4px 10px; font-size: 13px; }
+    #zoneSelect { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 7px; background: #fff; color: var(--text); }
+
+    .cards.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .card-sub { font-size: 12px; margin-top: 4px; opacity: 0.7; }
+
+    .bar-chart { position: relative; height: 360px; }
+    .trend-chart { position: relative; height: 340px; }
+    .note { margin: 10px 0 0; }
+
+    .cat-table th, .cat-table td { white-space: nowrap; }
+    .cat-table td.num, .cat-table th.num { text-align: right; }
+    .cat-table .name-cell { display: flex; align-items: center; gap: 8px; white-space: normal; }
+    .cat-table .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: var(--c, #94a3b8); }
+    .meter { display: inline-block; vertical-align: middle; width: 90px; height: 8px; margin-left: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+    .meter > span { display: block; height: 100%; background: var(--brand-blue, #0065B2); }
+    .cat-table tfoot td { font-weight: 800; background: #f8fafc; }
+
+    @media (max-width: 900px) { .cards.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 640px) {
+      .bar-chart { height: 300px; }
+      .trend-chart { height: 300px; }
+      .cards.four { grid-template-columns: 1fr; }
+      .filter-label { min-width: 100%; }
+      /* Table becomes stacked cards */
+      .cat-table table, .cat-table tbody, .cat-table tfoot, .cat-table tr, .cat-table td { display: block; width: 100%; }
+      .cat-table thead { display: none; }
+      .cat-table tr { border: 1px solid #d9e0e6; border-radius: 6px; padding: 8px 10px; margin-bottom: 10px; background: #fff; }
+      .cat-table td, .cat-table tfoot td { border: 0; padding: 4px 0; text-align: left; background: none; white-space: normal; }
+      .cat-table td.num { text-align: left; }
+      .cat-table td::before { content: attr(data-label); display: block; font-size: 12px; opacity: 0.7; font-weight: 400; }
+      .cat-table td.name-td::before { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="site-header"></div>
+  <script src="/nav.js"></script>
+
+  <main class="page-shell" id="categories">
+    <div class="page-heading">
+      <div>
+        <h1>LV Cable Categories</h1>
+        <p class="muted" id="reportDate">Loading category data...</p>
+      </div>
+      <button id="refreshButton" type="button">Refresh Data</button>
+    </div>
+
+    <section class="panel filter-panel" aria-label="Filters">
+      <div class="filter-row">
+        <span class="filter-label">Area</span>
+        <select id="zoneSelect" aria-label="Choose the area"></select>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">Show</span>
+        <div class="seg" id="metricSeg" role="group" aria-label="Choose what to show"></div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">Categories</span>
+        <button type="button" class="mini-btn" id="allBtn">All</button>
+        <button type="button" class="mini-btn" id="noneBtn">None</button>
+      </div>
+      <div class="cat-chips" id="catChips" role="group" aria-label="Choose the categories"></div>
+    </section>
+
+    <section class="cards four" id="summaryCards" style="margin-top:20px"></section>
+
+    <section class="panel">
+      <h2 id="barTitle">Completeness by category</h2>
+      <div class="bar-chart">
+        <canvas id="barChart" role="img" aria-label="Bar chart of completeness for each selected category"></canvas>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:20px">
+      <h2>Weekly trend</h2>
+      <div class="trend-chart">
+        <canvas id="trendChart" role="img" aria-label="Line chart of completeness over time for each selected category"></canvas>
+      </div>
+      <p class="muted note" id="trendNote"></p>
+    </section>
+
+    <section class="panel" style="margin-top:20px">
+      <h2>Detail</h2>
+      <p class="muted">Overall = laying 80% + termination (from) 10% + termination (to) 10%. Cancelled cables are not counted.</p>
+      <div class="table-wrap cat-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th class="num">Cables</th>
+              <th class="num">Laying</th>
+              <th class="num">Termination (from)</th>
+              <th class="num">Termination (to)</th>
+              <th class="num">Overall</th>
+            </tr>
+          </thead>
+          <tbody id="catBody"></tbody>
+          <tfoot id="catFoot"></tfoot>
+        </table>
+      </div>
+    </section>
+
+    <p id="status">Connecting to category data...</p>
+    <footer class="footer">PH PERTAMA · Internal Project Dashboard</footer>
+  </main>
+
+<script>
+  // ---- Settings you can change ------------------------------------------
+  const CHECK_EVERY_MINUTES = 5;       // how often the page checks for new data
+  // Colors of the categories, used in this order
+  const PALETTE = ["#0065B2", "#ED2124", "#16a34a", "#d97706", "#7c3aed", "#0d9488", "#db2777", "#475569", "#84cc16", "#0ea5e9"];
+  // -----------------------------------------------------------------------
+
+  const METRICS = [
+    { key: "overall", label: "Overall" },
+    { key: "laying", label: "Laying" },
+    { key: "termFrom", label: "Termination (from)" },
+    { key: "termTo", label: "Termination (to)" }
+  ];
+  const STORE_KEY = "lvCategoriesChoice";
+
+  let data = null;        // category-data.json
+  let history = [];       // category-history.json
+  let lastPayload = "";
+  let barChart = null;
+  let trendChart = null;
+
+  const state = { zone: "all", metric: "overall", off: new Set() };
+
+  // Remember the choices of this person (optional, ignored if the browser blocks storage)
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+    if (saved) {
+      if (typeof saved.zone === "string") state.zone = saved.zone;
+      if (METRICS.some(m => m.key === saved.metric)) state.metric = saved.metric;
+      if (Array.isArray(saved.off)) state.off = new Set(saved.off);
+    }
+  } catch (e) { /* ignore */ }
+  function saveChoice() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({ zone: state.zone, metric: state.metric, off: [...state.off] }));
+    } catch (e) { /* ignore */ }
+  }
+
+  const $ = id => document.getElementById(id);
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  const pct1 = v => v === null || v === undefined ? "—" : (v * 100).toFixed(1) + "%";
+
+  const colorOf = name => PALETTE[Math.max(0, data.categories.indexOf(name)) % PALETTE.length];
+  const selected = () => data.categories.filter(c => !state.off.has(c));
+
+  // Adds up the rows of a snapshot for some categories and the chosen area
+  function totals(rows, categories) {
+    const t = { target: 0, laying: 0, termFrom: 0, termTo: 0 };
+    for (const r of rows) {
+      if (!categories.includes(r.category)) continue;
+      if (state.zone !== "all" && r.zone !== state.zone) continue;
+      t.target += r.target; t.laying += r.laying; t.termFrom += r.termFrom; t.termTo += r.termTo;
+    }
+    return t;
+  }
+  function ratios(t) {
+    if (!t.target) return { laying: null, termFrom: null, termTo: null, overall: null };
+    const w = data.weights;
+    const laying = t.laying / t.target, termFrom = t.termFrom / t.target, termTo = t.termTo / t.target;
+    return { laying, termFrom, termTo, overall: laying * w.laying + termFrom * w.termFrom + termTo * w.termTo };
+  }
+  const metricLabel = () => METRICS.find(m => m.key === state.metric).label;
+
+  // ---------- filters ----------
+  function buildFilters() {
+    const zoneSelect = $("zoneSelect");
+    zoneSelect.textContent = "";
+    const zones = ["all"].concat(data.zones);
+    if (!zones.includes(state.zone)) state.zone = "all";
+    zones.forEach(z => {
+      const o = el("option", "", z === "all" ? "All areas" : z);
+      o.value = z;
+      zoneSelect.appendChild(o);
+    });
+    zoneSelect.value = state.zone;
+
+    const seg = $("metricSeg");
+    seg.textContent = "";
+    METRICS.forEach(m => {
+      const b = el("button", "", m.label);
+      b.type = "button";
+      b.setAttribute("aria-pressed", String(m.key === state.metric));
+      b.addEventListener("click", () => { state.metric = m.key; saveChoice(); buildFilters(); renderAll(); });
+      seg.appendChild(b);
+    });
+
+    const chips = $("catChips");
+    chips.textContent = "";
+    data.categories.forEach(name => {
+      const b = el("button");
+      b.type = "button";
+      b.style.setProperty("--c", colorOf(name));
+      b.appendChild(el("span", "dot"));
+      b.appendChild(document.createTextNode(name));
+      b.setAttribute("aria-pressed", String(!state.off.has(name)));
+      b.addEventListener("click", () => {
+        if (state.off.has(name)) state.off.delete(name); else state.off.add(name);
+        saveChoice(); b.setAttribute("aria-pressed", String(!state.off.has(name))); renderAll();
+      });
+      chips.appendChild(b);
+    });
+  }
+
+  // ---------- summary cards ----------
+  function makeCard(label, value, sub) {
+    const c = el("div", "card");
+    c.appendChild(el("div", "card-label", label));
+    c.appendChild(el("div", "card-value", value));
+    c.appendChild(el("div", "card-sub", sub));
+    return c;
+  }
+  function renderCards() {
+    const box = $("summaryCards");
+    box.textContent = "";
+    const t = totals(data.rows, selected());
+    const r = ratios(t);
+    box.appendChild(makeCard("Overall", pct1(r.overall), selected().length + " categories selected"));
+    box.appendChild(makeCard("Cables in target", String(t.target), "cancelled cables not counted"));
+    box.appendChild(makeCard("Laying done", pct1(r.laying), t.laying + " of " + t.target + " cables"));
+    box.appendChild(makeCard("Terminated", pct1(r.termFrom === null ? null : (r.termFrom + r.termTo) / 2),
+      "from " + t.termFrom + " · to " + t.termTo));
+  }
+
+  // ---------- bar chart ----------
+  function renderBar() {
+    const cats = selected();
+    const values = cats.map(c => {
+      const r = ratios(totals(data.rows, [c]));
+      return r[state.metric] === null ? null : r[state.metric] * 100;
+    });
+    $("barTitle").textContent = metricLabel() + " by category" + (state.zone === "all" ? "" : " · " + state.zone);
+    if (barChart) barChart.destroy();
+    barChart = new Chart($("barChart"), {
+      type: "bar",
+      data: { labels: cats, datasets: [{ data: values, backgroundColor: cats.map(colorOf), borderRadius: 4 }] },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const t = totals(data.rows, [ctx.label]);
+                const v = ctx.parsed.x;
+                return (v === null ? "no cables" : v.toFixed(1) + "%") + "  (" + t.target + " cables)";
+              }
+            }
+          }
+        },
+        scales: {
+          x: { min: 0, max: 100, ticks: { callback: v => v + "%" } },
+          y: { ticks: { autoSkip: false } }
+        }
+      }
+    });
+  }
+
+  // ---------- trend chart ----------
+  function shortDate(text) {
+    const d = new Date(text + "T00:00:00");
+    return isNaN(d) ? text : d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+  function renderTrend() {
+    const cats = selected();
+    const labels = history.map(h => shortDate(h.date));
+    const datasets = cats.map(c => ({
+      label: c,
+      data: history.map(h => {
+        const r = ratios(totals(h.rows, [c]));
+        return r[state.metric] === null ? null : r[state.metric] * 100;
+      }),
+      borderColor: colorOf(c),
+      backgroundColor: colorOf(c),
+      tension: 0.25,
+      spanGaps: true,
+      pointRadius: history.length > 20 ? 2 : 4
+    }));
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart($("trendChart"), {
+      type: "line",
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 12 } },
+          tooltip: { callbacks: { label: ctx => ctx.dataset.label + ": " + (ctx.parsed.y === null ? "—" : ctx.parsed.y.toFixed(1) + "%") } }
+        },
+        scales: { y: { min: 0, max: 100, ticks: { callback: v => v + "%" } } }
+      }
+    });
+    $("trendNote").textContent = history.length === 0
+      ? "No history yet. A snapshot is saved every time you run update-dashboard.bat."
+      : history.length === 1
+        ? "Only one snapshot so far (" + history[0].date + "). The lines grow with each update."
+        : history.length + " snapshots, from " + history[0].date + " to " + history[history.length - 1].date + ".";
+  }
+
+  // ---------- table ----------
+  function renderTable() {
+    const body = $("catBody"), foot = $("catFoot");
+    body.textContent = ""; foot.textContent = "";
+
+    const addRow = (parent, name, t, withDot) => {
+      const r = ratios(t);
+      const tr = el("tr");
+      const nameTd = el("td", "name-td");
+      nameTd.dataset.label = "Category";
+      const wrap = el("div", "name-cell");
+      if (withDot) { const d = el("span", "dot"); d.style.setProperty("--c", colorOf(name)); wrap.appendChild(d); }
+      wrap.appendChild(document.createTextNode(name));
+      nameTd.appendChild(wrap);
+      tr.appendChild(nameTd);
+      const cell = (label, text) => { const td = el("td", "num", text); td.dataset.label = label; tr.appendChild(td); return td; };
+      cell("Cables", String(t.target));
+      cell("Laying", pct1(r.laying));
+      cell("Termination (from)", pct1(r.termFrom));
+      cell("Termination (to)", pct1(r.termTo));
+      const o = cell("Overall", pct1(r.overall));
+      const m = el("span", "meter"); const f = el("span");
+      f.style.width = ((r.overall || 0) * 100).toFixed(1) + "%";
+      m.appendChild(f); o.appendChild(m);
+      parent.appendChild(tr);
+    };
+
+    const cats = selected();
+    cats.forEach(c => addRow(body, c, totals(data.rows, [c]), true));
+    if (!cats.length) {
+      const tr = el("tr"); const td = el("td", "", "No category selected."); td.colSpan = 6; tr.appendChild(td); body.appendChild(tr);
+    } else {
+      addRow(foot, "Total (selected)", totals(data.rows, cats), false);
+    }
+  }
+
+  function renderAll() {
+    renderCards(); renderBar(); renderTrend(); renderTable();
+  }
+
+  // ---------- loading ----------
+  async function refreshData(manual = false) {
+    const status = $("status");
+    try {
+      if (manual === true) status.textContent = "Loading category data...";
+      const res = await fetch("/api/categories", { cache: "no-store" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to load category data.");
+
+      let hist = [];
+      try {
+        const hr = await fetch("/api/category-history", { cache: "no-store" });
+        if (hr.ok) hist = await hr.json();
+      } catch (e) { /* history is optional */ }
+
+      const payload = JSON.stringify([json, hist]);
+      if (manual === true || payload !== lastPayload) {
+        lastPayload = payload;
+        data = json;
+        history = Array.isArray(hist) ? hist : [];
+        $("reportDate").textContent = "Snapshot of " + data.date + " · " + data.cables + " LV cables";
+        buildFilters();
+        renderAll();
+      }
+      status.textContent = "Connected | Last checked: " + new Date().toLocaleTimeString();
+    } catch (error) {
+      status.textContent = "Error: " + error.message;
+      $("reportDate").textContent = "No category data yet. Run update-dashboard.bat with the clean Excel file.";
+    }
+  }
+
+  $("zoneSelect").addEventListener("change", e => { state.zone = e.target.value; saveChoice(); if (data) renderAll(); });
+  $("allBtn").addEventListener("click", () => { state.off.clear(); saveChoice(); if (data) { buildFilters(); renderAll(); } });
+  $("noneBtn").addEventListener("click", () => { if (!data) return; state.off = new Set(data.categories); saveChoice(); buildFilters(); renderAll(); });
+  $("refreshButton").addEventListener("click", () => refreshData(true));
+
+  refreshData();
+  setInterval(() => { if (!document.hidden) refreshData(); }, CHECK_EVERY_MINUTES * 60 * 1000);
+</script>
+<script src="/themes.js"></script>
+</body>
+</html>
