@@ -25,7 +25,17 @@ app.use(
 );
 
 // Serves the website files (index.html, s-curve.html, style.css, images)
-app.use(express.static(path.join(__dirname, "public")));
+// Clean addresses: /cable-status.html redirects to /cable-status (old links and bookmarks keep working)
+app.use((req, res, next) => {
+  if (req.method === "GET" && /\.html$/i.test(req.path)) {
+    const clean = req.path.replace(/\/index\.html$/i, "/").replace(/\.html$/i, "");
+    const query = req.url.slice(req.path.length);
+    return res.redirect(301, (clean || "/") + query);
+  }
+  next();
+});
+// "extensions: html" lets /cable-status open cable-status.html
+app.use(express.static(path.join(__dirname, "public"), { extensions: ["html"] }));
 
 // Used by Render to check that the server is alive
 app.get("/health", (req, res) => {
