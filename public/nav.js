@@ -2,15 +2,17 @@
 // To add a new dashboard, add one line to DASHBOARDS below.
 (function () {
   const DASHBOARDS = [
-    { href: "/cable-status.html", label: "Cable Status" },
-    { href: "/s-curve.html", label: "S-Curve" },
-    { href: "/daily.html", label: "Daily Activities" },
-    { href: "/categories.html", label: "LV Categories" }
+    { href: "/cable-status", label: "Cable Status" },
+    { href: "/s-curve", label: "S-Curve" },
+    { href: "/daily", label: "Daily Activities" },
+    { href: "/categories", label: "LV Categories" }
   ];
 
-  const path = location.pathname.replace(/\/index\.html$/, "/");
+  // Works with or without ".html" in the address (e.g. /cable-status and /cable-status.html)
+  const clean = p => p.replace(/\/index\.html$/, "/").replace(/\.html$/, "").replace(/(.)\/$/, "$1");
+  const path = clean(location.pathname);
   const onHome = path === "/";
-  const onDashboards = DASHBOARDS.some(d => d.href === path);
+  const onDashboards = DASHBOARDS.some(d => clean(d.href) === path);
 
   // Colors the browser bar on phones
   const theme = document.createElement("meta");
@@ -34,7 +36,7 @@
   if (onDashboards) {
     html +=
       '<nav class="sub-nav" aria-label="Dashboards"><div class="sub-nav-inner">' +
-      DASHBOARDS.map(d => '<a href="' + d.href + '"' + current(d.href === path) + ">" + d.label + "</a>").join("") +
+      DASHBOARDS.map(d => '<a href="' + d.href + '"' + current(clean(d.href) === path) + ">" + d.label + "</a>").join("") +
       "</div></nav>";
   }
 
