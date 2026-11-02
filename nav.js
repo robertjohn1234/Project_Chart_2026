@@ -8,9 +8,11 @@
     { href: "/categories", label: "LV Categories" }
   ];
 
-  const path = location.pathname.replace(/\/index\.html$/, "/").replace(/\.html$/, "");
+  // Works with or without ".html" in the address (e.g. /cable-status and /cable-status.html)
+  const clean = p => p.replace(/\/index\.html$/, "/").replace(/\.html$/, "").replace(/(.)\/$/, "$1");
+  const path = clean(location.pathname);
   const onHome = path === "/";
-  const onDashboards = DASHBOARDS.some(d => d.href === path);
+  const onDashboards = DASHBOARDS.some(d => clean(d.href) === path);
 
   // Colors the browser bar on phones
   const theme = document.createElement("meta");
@@ -34,7 +36,7 @@
   if (onDashboards) {
     html +=
       '<nav class="sub-nav" aria-label="Dashboards"><div class="sub-nav-inner">' +
-      DASHBOARDS.map(d => '<a href="' + d.href + '"' + current(d.href === path) + ">" + d.label + "</a>").join("") +
+      DASHBOARDS.map(d => '<a href="' + d.href + '"' + current(clean(d.href) === path) + ">" + d.label + "</a>").join("") +
       "</div></nav>";
   }
 
