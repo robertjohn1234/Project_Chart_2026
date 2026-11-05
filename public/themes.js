@@ -18,7 +18,7 @@
    VARIANT - the look, from 1 to 5. Each event has 5 looks,
              their names are listed in the EVENTS section below.
    ============================================================ */
-const EVENT = "halloween";
+const EVENT = "christmas";
 const VARIANT = 4;
 
 
@@ -50,9 +50,9 @@ const BANNER_IMAGES = {
   "labor-day": "",
   "independence-day": "",
   "buwan-ng-wika": "",
-  "halloween": "/images/themes/halloween.jpg",
+  "halloween": "",
   "bonifacio-day": "",
-  "christmas": ""
+  "christmas": "/images/themes/christmas1.jpg"
 };
 const PAGE_IMAGES = {
   "new-year": "",
@@ -61,12 +61,12 @@ const PAGE_IMAGES = {
   "labor-day": "",
   "independence-day": "",
   "buwan-ng-wika": "",
-  "halloween": "/images/themes/halloween.jpg",
+  "halloween": "",
   "bonifacio-day": "",
-  "christmas": ""
+  "christmas": "/images/themes/christmas1.jpg"
 };
-const BANNER_SHADE = 0.45;
-const PAGE_FADE = 0.50;
+const BANNER_SHADE = 0.70;
+const PAGE_FADE = 0.10;
 
 
 /* ============================================================
