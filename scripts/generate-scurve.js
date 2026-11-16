@@ -1,11 +1,10 @@
-const ExcelJS = require("exceljs");
+const { loadWorkbook, DATA_DIR } = require("./sheets");
 const fs = require("fs");
 const path = require("path");
 
 // ---- Settings you may need to change -------------------------------------
 // The Excel file must be in the same folder as this script.
-const EXCEL_FILE = path.join(__dirname, "scurve_Quickchart.xlsx");
-const OUTPUT_FILE = path.join(__dirname, "scurve-data.json");
+const OUTPUT_FILE = path.join(DATA_DIR, "scurve-data.json");
 // The sheet to read. If you create a new baseline sheet later, change this.
 const SHEET_NAME = "S-Curve Baseline2 July-Nov 26";
 // ---------------------------------------------------------------------------
@@ -67,8 +66,10 @@ function findRow(sheet, label) {
 async function generateScurve() {
   console.log("Converting S-curve workbook to JSON...");
 
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.readFile(EXCEL_FILE);
+  const workbook = await loadWorkbook("scurve");
+  if (!workbook) {
+    throw new Error("No source for the S-curve. Set the Google Sheet link in scripts/sheets.js.");
+  }
 
   const sheet = workbook.getWorksheet(SHEET_NAME);
   if (!sheet) {

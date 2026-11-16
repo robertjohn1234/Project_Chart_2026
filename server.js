@@ -5,12 +5,13 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const DATA_FILE = path.join(__dirname, "dashboard-data.json");
-const SCURVE_FILE = path.join(__dirname, "scurve-data.json");
-const DAILY_FILE = path.join(__dirname, "daily-data.json");
-const DAILY_HISTORY_FILE = path.join(__dirname, "daily-history.json");
-const CATEGORY_FILE = path.join(__dirname, "category-data.json");
-const CATEGORY_HISTORY_FILE = path.join(__dirname, "category-history.json");
+const DATA_DIR = path.join(__dirname, "data");
+const DATA_FILE = path.join(DATA_DIR, "dashboard-data.json");
+const SCURVE_FILE = path.join(DATA_DIR, "scurve-data.json");
+const DAILY_FILE = path.join(DATA_DIR, "daily-data.json");
+const DAILY_HISTORY_FILE = path.join(DATA_DIR, "daily-history.json");
+const CATEGORY_FILE = path.join(DATA_DIR, "category-data.json");
+const CATEGORY_HISTORY_FILE = path.join(DATA_DIR, "category-history.json");
 
 // Optional: smaller downloads for big text files. Install once with:  npm install compression
 try { app.use(require("compression")()); } catch (error) { /* not installed: works fine without it */ }
@@ -57,7 +58,7 @@ function sendJsonFile(res, file) {
     const missing = error.code === "ENOENT";
     res.status(missing ? 503 : 500).json({
       error: missing
-        ? `${name} not found. Run update-dashboard.bat and commit the file.`
+        ? `${name} not found. Run update-dashboard.bat and push the data folder.`
         : `Unable to read ${name}`,
       details: error.message
     });

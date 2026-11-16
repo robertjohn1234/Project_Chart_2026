@@ -314,23 +314,23 @@
       const d = cable.value;
       const vals = d.areas.filter(a => a.latest !== null).map(a => a.latest);
       const avg = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
-      box.appendChild(tile("/cable-status.html", "Cable pulling & termination",
+      box.appendChild(tile("/cable-status", "Cable pulling & termination",
         avg === null ? "\u2014" : pct1(avg),
         d.summary.filter(s => s.average !== null).map(s => s.section + " " + pct0(s.average)).join(" \u00B7 "),
         "Open Cable Status"));
-    } else box.appendChild(tile("/cable-status.html", "Cable pulling & termination", "\u2014", na, "Open Cable Status"));
+    } else box.appendChild(tile("/cable-status", "Cable pulling & termination", "\u2014", na, "Open Cable Status"));
 
     if (scurve.status === "fulfilled") {
       const d = scurve.value, w = d.weeks[d.latestIndex];
-      box.appendChild(tile("/s-curve.html", "Project S-curve (actual)", pct1(w.actualCum),
+      box.appendChild(tile("/s-curve", "Project S-curve (actual)", pct1(w.actualCum),
         "Plan " + pct1(w.planCum) + " \u00B7 " + gapText(w.gapPP), "Open S-Curve"));
-    } else box.appendChild(tile("/s-curve.html", "Project S-curve (actual)", "\u2014", na, "Open S-Curve"));
+    } else box.appendChild(tile("/s-curve", "Project S-curve (actual)", "\u2014", na, "Open S-Curve"));
 
     if (daily.status === "fulfilled") {
       const s = daily.value.summary;
-      box.appendChild(tile("/daily.html", "Daily activities", s.hold + " on hold",
+      box.appendChild(tile("/daily", "Daily activities", s.hold + " on hold",
         s.progress + " in progress \u00B7 " + s.done + " done \u00B7 " + s.total + " total", "Open Daily Activities"));
-    } else box.appendChild(tile("/daily.html", "Daily activities", "\u2014", na, "Open Daily Activities"));
+    } else box.appendChild(tile("/daily", "Daily activities", "\u2014", na, "Open Daily Activities"));
   }
 
   initHero();

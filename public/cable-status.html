@@ -285,7 +285,7 @@
         nameCell.textContent = r.category;
       } else {
         const link = document.createElement("a");
-        link.href = "/categories.html?zone=" + encodeURIComponent(zone) + "&cat=" + encodeURIComponent(r.category);
+        link.href = "/categories?zone=" + encodeURIComponent(zone) + "&cat=" + encodeURIComponent(r.category);
         link.textContent = r.category;
         link.title = "Open in LV Categories";
         nameCell.appendChild(link);
@@ -335,7 +335,7 @@
     note.textContent = "From the cable list in Excel, as of " + shortDate(categoryData.date) +
       ". It can differ slightly from the weekly figure above until the Per week sheet is updated. ";
     const more = document.createElement("a");
-    more.href = "/categories.html?zone=" + encodeURIComponent(zone);
+    more.href = "/categories?zone=" + encodeURIComponent(zone);
     more.textContent = "Open in LV Categories";
     note.appendChild(more);
     wrap.appendChild(note);

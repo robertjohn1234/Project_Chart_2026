@@ -3,9 +3,9 @@ const path = require("path");
 
 // ---- Settings you may need to change -------------------------------------
 // Same Excel file that generate-data.js reads (same folder as this script).
-const EXCEL_FILE = path.join(__dirname, "Cable Percentage -.xlsx");
-const DATA_FILE = path.join(__dirname, "category-data.json");
-const HISTORY_FILE = path.join(__dirname, "category-history.json");
+const { loadWorkbook, DATA_DIR } = require("./sheets");
+const DATA_FILE = path.join(DATA_DIR, "category-data.json");
+const HISTORY_FILE = path.join(DATA_DIR, "category-history.json");
 // Sheets and layout. These match the clean workbook.
 const LV_SHEET = "Mill LV Cables";   // cables start at row 4
 const MAP_SHEET = "Category Map";    // rules start at row 4 (A = pattern, B = category)
@@ -110,14 +110,11 @@ function readHistory() {
 
 async function generateCategories() {
   console.log("Reading LV categories...");
-  if (!fs.existsSync(EXCEL_FILE)) {
-    console.log("Excel file not found, categories skipped.");
+  const workbook = await loadWorkbook("cable");
+  if (!workbook) {
+    console.log("No source for the cable workbook, categories skipped.");
     return;
   }
-
-  const ExcelJS = require("exceljs");
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.readFile(EXCEL_FILE);
   const lv = workbook.getWorksheet(LV_SHEET);
   const mapSheet = workbook.getWorksheet(MAP_SHEET);
   if (!lv || !mapSheet) {

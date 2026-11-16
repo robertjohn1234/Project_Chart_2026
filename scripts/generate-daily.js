@@ -1,14 +1,12 @@
-const ExcelJS = require("exceljs");
+const { loadWorkbook, DATA_DIR } = require("./sheets");
 const fs = require("fs");
 const path = require("path");
 
 // ---- Settings you may need to change -------------------------------------
-// The Excel file must be in the same folder as this script.
-const EXCEL_FILE = path.join(__dirname, "daily activities.xlsx");
-const OUTPUT_FILE = path.join(__dirname, "daily-data.json");
+const OUTPUT_FILE = path.join(DATA_DIR, "daily-data.json");
 // One line is saved here for every report date, so history builds up
 // even though finished items are removed from the Excel the next day.
-const HISTORY_FILE = path.join(__dirname, "daily-history.json");
+const HISTORY_FILE = path.join(DATA_DIR, "daily-history.json");
 // The sheet to read (if not found, the first sheet is used).
 const SHEET_NAME = "ActionItems";
 // ---------------------------------------------------------------------------
@@ -181,15 +179,11 @@ function updateHistory(data) {
 async function generateDaily() {
   console.log("Converting daily activities workbook to JSON...");
 
-  if (!fs.existsSync(EXCEL_FILE)) {
-    console.log(
-      `SKIPPED: ${path.basename(EXCEL_FILE)} not found in this folder. Daily activities were not updated.`
-    );
+  const workbook = await loadWorkbook("daily");
+  if (!workbook) {
+    console.log("SKIPPED: no Google Sheet link or Excel file for the daily report. Daily activities were not updated.");
     return false;
   }
-
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.readFile(EXCEL_FILE);
 
   const sheet = workbook.getWorksheet(SHEET_NAME) || workbook.worksheets[0];
   if (!sheet) {

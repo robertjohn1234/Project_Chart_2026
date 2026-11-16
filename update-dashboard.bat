@@ -9,7 +9,7 @@ echo ========================================
 echo.
 
 echo [1/3] Generating dashboard data...
-call npm run generate-data
+call npm run update-data
 if errorlevel 1 goto error
 
 echo.
@@ -19,11 +19,11 @@ if errorlevel 1 goto error
 
 echo.
 echo [3/3] Committing and pushing updates...
-git add dashboard-data.json scurve-data.json daily-data.json daily-history.json category-data.json category-history.json
+git add data
 if errorlevel 1 goto error
 git diff --cached --quiet
 if not errorlevel 1 (
-    echo No changes in dashboard data to push.
+    echo No changes in the dashboard data to push.
     goto success
 )
 

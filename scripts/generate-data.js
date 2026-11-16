@@ -1,12 +1,11 @@
-const ExcelJS = require("exceljs");
 const fs = require("fs");
 const path = require("path");
+const { loadWorkbook, DATA_DIR } = require("./sheets");
 const { generateScurve } = require("./generate-scurve");
 const { generateDaily } = require("./generate-daily");
 const { generateCategories } = require("./generate-categories");
 
-const EXCEL_FILE = path.join(__dirname, "Cable Percentage -.xlsx");
-const OUTPUT_FILE = path.join(__dirname, "dashboard-data.json");
+const OUTPUT_FILE = path.join(DATA_DIR, "dashboard-data.json");
 const SHEET_NAME = "Per week";
 
 // Reads a cell's real value, including results of formula cells
@@ -58,10 +57,12 @@ function cellDate(cell) {
 }
 
 async function main() {
-  console.log("Converting Excel workbook to JSON...");
+  console.log("Reading cable progress...");
 
-  const workbook = new ExcelJS.Workbook();
-  await workbook.xlsx.readFile(EXCEL_FILE);
+  const workbook = await loadWorkbook("cable");
+  if (!workbook) {
+    throw new Error("No source for the cable data. Set the Google Sheet link in scripts/sheets.js.");
+  }
 
   const sheet = workbook.getWorksheet(SHEET_NAME);
 
