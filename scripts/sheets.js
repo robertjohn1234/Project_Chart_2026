@@ -22,7 +22,7 @@ const SOURCES = {
     }
   },
   scurve: { file: "scurve_Quickchart.xlsx", tabs: {} },
-  daily:  { file: "Daily_Activities.xlsx",  tabs: {} }
+  daily:  { file: "daily activities.xlsx",  tabs: {} }
 };
 
 // ---- CSV reading ----------------------------------------------------------
@@ -98,11 +98,20 @@ async function read(key) {
     return workbook;
   }
 
-  const file = path.join(DATA_DIR, source.file);
-  if (!fs.existsSync(file)) return null;
-  console.log(`Reading "${key}" from ${source.file} (no Google link set).`);
-  await workbook.xlsx.readFile(file);
+  const found = findExcelFile(source.file);
+  if (!found) return null;
+  console.log(`Reading "${key}" from ${found} (no Google link set).`);
+  await workbook.xlsx.readFile(path.join(DATA_DIR, found));
   return workbook;
+}
+
+// Finds the Excel file in the data folder. Capital letters, spaces and underscores do not matter,
+// so "daily activities.xlsx" is found for "Daily_Activities.xlsx". Excel's temporary "~$" files are ignored.
+function findExcelFile(wanted) {
+  const clean = name => name.toLowerCase().replace(/[^a-z0-9.]/g, "");
+  let files = [];
+  try { files = fs.readdirSync(DATA_DIR); } catch (error) { return null; }
+  return files.find(f => !f.startsWith("~$") && clean(f) === clean(wanted)) || null;
 }
 
 module.exports = { loadWorkbook, DATA_DIR, SOURCES, parseCsv };
