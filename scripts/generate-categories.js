@@ -108,6 +108,61 @@ function readHistory() {
   }
 }
 
+// Reads the "LV by Category and Area" block of the Cable Summary tab.
+// Layout: a line with the category name and "All areas", then one line per zone with
+// Target, Laid, Term. From, Term. To in the next four columns.
+function readSummaryBlock(sheet) {
+  const BLOCK_TITLE = "LV by Category and Area";
+  let start = 0;
+  for (let r = 1; r <= sheet.rowCount; r++) {
+    if (cellText(sheet.getRow(r).getCell(1)) === BLOCK_TITLE) { start = r; break; }
+  }
+  if (!start) return null;
+
+  const num = cell => {
+    const n = Number(rawValue(cell));
+    return Number.isFinite(n) ? n : 0;
+  };
+  const rows = [];
+  const order = [];
+  let category = "";
+  let blank = 0;
+  for (let r = start + 1; r <= sheet.rowCount; r++) {
+    const row = sheet.getRow(r);
+    const first = cellText(row.getCell(1));
+    const second = cellText(row.getCell(2));
+    if (!first && !second) { if (++blank >= 2) break; continue; }
+    blank = 0;
+    if (first) category = first;
+    if (second === "All areas" || !ZONES.includes(second)) continue; // skip the category total line
+    const item = {
+      category, zone: second,
+      target: num(row.getCell(3)), laying: num(row.getCell(4)),
+      termFrom: num(row.getCell(5)), termTo: num(row.getCell(6))
+    };
+    if (item.target > 0) {
+      rows.push(item);
+      if (!order.includes(category)) order.push(category);
+    }
+  }
+  return { rows, order };
+}
+
+function saveResults(rows, categories, cables) {
+  const date = todayText();
+  const data = { date, weights: WEIGHTS, zones: ZONES, categories, cables, rows };
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data), "utf8");
+
+  // One snapshot per day. Running again on the same day replaces that day's snapshot.
+  const history = readHistory().filter(item => item.date !== date);
+  history.push({ date, rows });
+  history.sort((a, b) => a.date.localeCompare(b.date));
+  fs.writeFileSync(HISTORY_FILE, JSON.stringify(history), "utf8");
+
+  console.log("Categories:", categories.length, "| cables:", cables);
+  console.log("Snapshots saved:", history.length, "(latest " + date + ")");
+}
+
 async function generateCategories() {
   console.log("Reading LV categories...");
   const workbook = await loadWorkbook("cable");
@@ -115,15 +170,28 @@ async function generateCategories() {
     console.log("No source for the cable workbook, categories skipped.");
     return;
   }
-  const lv = workbook.getWorksheet(LV_SHEET);
-  const mapSheet = workbook.getWorksheet(MAP_SHEET);
-  if (!lv || !mapSheet) {
-    console.log(`Sheet "${LV_SHEET}" or "${MAP_SHEET}" not found, categories skipped.`);
-    console.log("(Use the clean workbook, it has both sheets.)");
+
+  // New workbook: the category totals are already calculated in the Cable Summary tab
+  const summary = workbook.getWorksheet("Cable Summary");
+  if (summary) {
+    const block = readSummaryBlock(summary);
+    if (!block || !block.rows.length) {
+      console.log('The block "LV by Category and Area" was not found in Cable Summary, categories skipped.');
+      return;
+    }
+    const cables = block.rows.reduce((sum, row) => sum + row.target, 0);
+    saveResults(block.rows, block.order, cables);
     return;
   }
 
-  // Rules from the Category Map sheet
+  // Old workbook: count the cables ourselves from the Mill LV Cables sheet and the Category Map
+  const lv = workbook.getWorksheet(LV_SHEET);
+  const mapSheet = workbook.getWorksheet(MAP_SHEET);
+  if (!lv || !mapSheet) {
+    console.log(`Neither "Cable Summary" nor "${LV_SHEET}" + "${MAP_SHEET}" found, categories skipped.`);
+    return;
+  }
+
   const rules = [];
   const categoryOrder = [];
   for (let r = FIRST_ROW; r <= MAP_LAST_ROW; r++) {
@@ -134,7 +202,7 @@ async function generateCategories() {
   }
   categoryOrder.push("Other");
 
-  // Cables (only rows whose cable ID is text, this skips the SUBTOTAL row under the data)
+  // Only rows whose cable ID is text (this skips the SUBTOTAL row under the data)
   const records = [];
   for (let r = FIRST_ROW; r <= lv.rowCount; r++) {
     const row = lv.getRow(r);
@@ -151,26 +219,7 @@ async function generateCategories() {
   }
 
   const rows = buildRows(records, rules, categoryOrder);
-  const date = todayText();
-
-  const data = {
-    date,
-    weights: WEIGHTS,
-    zones: ZONES,
-    categories: categoryOrder.filter(name => rows.some(row => row.category === name)),
-    cables: records.length,
-    rows
-  };
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data), "utf8");
-
-  // One snapshot per day. Running again on the same day replaces that day's snapshot.
-  const history = readHistory().filter(item => item.date !== date);
-  history.push({ date, rows });
-  history.sort((a, b) => a.date.localeCompare(b.date));
-  fs.writeFileSync(HISTORY_FILE, JSON.stringify(history), "utf8");
-
-  console.log("Categories:", data.categories.length, "| cables:", records.length);
-  console.log("Snapshots saved:", history.length, "(latest " + date + ")");
+  saveResults(rows, categoryOrder.filter(name => rows.some(row => row.category === name)), records.length);
 }
 
 module.exports = { generateCategories, buildRows, zoneOf, categoryOf };

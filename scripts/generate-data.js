@@ -6,7 +6,12 @@ const { generateDaily } = require("./generate-daily");
 const { generateCategories } = require("./generate-categories");
 
 const OUTPUT_FILE = path.join(DATA_DIR, "dashboard-data.json");
-const SHEET_NAME = "Per week";
+// The weekly sheet: the new workbook calls it "Weekly Monitoring", the old one "Per week".
+const SHEET_NAMES = ["Weekly Monitoring", "Per week"];
+// The LIVE column of the sheet (today's figures, calculated from the cable list):
+// true  = the dashboard shows the live figures as the latest week
+// false = the dashboard shows only the weeks you recorded
+const INCLUDE_LIVE = true;
 
 // Reads a cell's real value, including results of formula cells
 function rawValue(cell) {
@@ -35,24 +40,34 @@ function cellNumber(cell) {
   return Number.isFinite(v) ? v : null;
 }
 
-// Returns a date as "YYYY-MM-DD", or null if the header is not a date
+const pad = n => String(n).padStart(2, "0");
+
+// Returns { date: "YYYY-MM-DD", live: true/false }, or null if the header is not a date.
+// Accepts real dates, "m/d/yyyy", "yyyy-mm-dd", "Aug 22, 2026" and the LIVE column ("LIVE 11/17/2026").
 function cellDate(cell) {
   const v = rawValue(cell);
 
   if (v instanceof Date && !isNaN(v.getTime())) {
-    return v.toISOString().slice(0, 10);
+    return { date: v.toISOString().slice(0, 10), live: false };
   }
+  if (typeof v !== "string") return null;
 
-  if (typeof v === "string" && v.trim()) {
-    const parsed = new Date(v);
+  let text = v.trim();
+  const live = /^live\b/i.test(text);
+  if (live) text = text.replace(/^live\s*/i, "");
+
+  let m = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (m) return { date: `${m[1]}-${pad(m[2])}-${pad(m[3])}`, live };
+
+  m = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); // month/day/year, like the sheet shows it
+  if (m) return { date: `${m[3]}-${pad(m[1])}-${pad(m[2])}`, live };
+
+  if (/^[A-Za-z]{3,9}\.? \d{1,2},? \d{4}$/.test(text)) {
+    const parsed = new Date(text);
     if (!isNaN(parsed.getTime())) {
-      const y = parsed.getFullYear();
-      const m = String(parsed.getMonth() + 1).padStart(2, "0");
-      const d = String(parsed.getDate()).padStart(2, "0");
-      return `${y}-${m}-${d}`;
+      return { date: `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}`, live };
     }
   }
-
   return null;
 }
 
@@ -64,17 +79,17 @@ async function main() {
     throw new Error("No source for the cable data. Set the Google Sheet link in scripts/sheets.js.");
   }
 
-  const sheet = workbook.getWorksheet(SHEET_NAME);
+  const sheet = SHEET_NAMES.map(name => workbook.getWorksheet(name)).find(Boolean);
 
   if (!sheet) {
-    throw new Error(`Worksheet "${SHEET_NAME}" not found.`);
+    throw new Error(`Worksheet "${SHEET_NAMES.join('" or "')}" not found. Check the tab link in scripts/sheets.js.`);
   }
 
   const weeks = [];
 
   for (let col = 3; col <= sheet.columnCount; col++) {
-    const date = cellDate(sheet.getRow(1).getCell(col));
-    if (date) weeks.push({ column: col, date });
+    const header = cellDate(sheet.getRow(1).getCell(col));
+    if (header && (INCLUDE_LIVE || !header.live)) weeks.push({ column: col, date: header.date });
   }
 
   if (!weeks.length) {
