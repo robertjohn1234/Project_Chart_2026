@@ -19,7 +19,7 @@
              their names are listed in the EVENTS section below.
    ============================================================ */
 const EVENT = "christmas";
-const VARIANT = 4;
+const VARIANT = 2;
 
 
 /* ============================================================
@@ -52,7 +52,7 @@ const BANNER_IMAGES = {
   "buwan-ng-wika": "",
   "halloween": "",
   "bonifacio-day": "",
-  "christmas": "/images/themes/christmas1.jpg"
+  "christmas": ""
 };
 const PAGE_IMAGES = {
   "new-year": "",
@@ -63,10 +63,10 @@ const PAGE_IMAGES = {
   "buwan-ng-wika": "",
   "halloween": "",
   "bonifacio-day": "",
-  "christmas": "/images/themes/christmas1.jpg"
+  "christmas": ""
 };
-const BANNER_SHADE = 0.70;
-const PAGE_FADE = 0.10;
+const BANNER_SHADE = 0.50;
+const PAGE_FADE = 0.50;
 
 
 /* ============================================================
@@ -89,7 +89,7 @@ const PAGE_FADE = 0.10;
    Order of priority: "event-look@page", "event@page", "event-look", "event"
    ============================================================ */
 const DASHBOARD_THEME = true;
-const DASHBOARD_BANNER = true;
+const DASHBOARD_BANNER = false;
 const DASHBOARD_BANNER_IMAGES = {
   "new-year": "",
   "valentines": "",

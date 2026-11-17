@@ -66,6 +66,23 @@
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* ignore */ } }
   };
 
+  // Soft text swap: the card itself stays still (no jumping), only its text fades out and in.
+  // The card keeps the tallest height it has had, so nothing below it moves.
+  function flipSwap(cardId, swap) {
+    const card = $(cardId);
+    const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!card || reduce) { swap(); return; }
+    card.style.minHeight = card.offsetHeight + "px";
+    card.classList.add("swap-out");
+    setTimeout(() => {
+      swap();
+      requestAnimationFrame(() => {
+        card.style.minHeight = Math.max(card.offsetHeight, parseInt(card.style.minHeight, 10) || 0) + "px";
+        card.classList.remove("swap-out");
+      });
+    }, 300);
+  }
+
   let category = 0;
   const shown = {};
 
@@ -117,7 +134,7 @@
       box.appendChild(b);
     });
 
-    $("verseBtn").addEventListener("click", () => showItem(true));
+    $("verseBtn").addEventListener("click", () => flipSwap("verseCard", () => showItem(true)));
     showItem(false);
   }
 
@@ -146,16 +163,37 @@
     const sign = SIGNS[signIndex];
     const seed = todayKey() + "|" + sign[0];
     $("horoText").textContent = horoLines[(dayNumber() * SIGNS.length + signIndex) % horoLines.length];
+    $("horoHead").innerHTML = "";
+    const big = el("span", "horo-big", sign[1] + "\uFE0E");
+    const nm = el("span", "horo-name", sign[0]);
+    const dt = el("span", "horo-dates", sign[2]);
+    const wrap = el("span", "horo-title"); wrap.append(nm, dt);
+    $("horoHead").append(big, wrap);
+    [...$("signGrid").children].forEach((b, k) => b.setAttribute("aria-checked", String(k === signIndex)));
     $("horoMeta").textContent =
       "Lucky number: " + (1 + hash(seed + "n") % 99) + " \u00B7 Lucky color: " + LUCKY_COLORS[hash(seed + "c") % LUCKY_COLORS.length];
   }
 
   function initHoroscope() {
     const select = $("signSelect");
-    SIGNS.forEach((s, n) => select.appendChild(new Option(s[1] + "\uFE0E " + s[0] + " (" + s[2] + ")", String(n))));
+    const grid = $("signGrid");
+    SIGNS.forEach((s, n) => {
+      select.appendChild(new Option(s[0], String(n)));
+      const b = el("button", "sign-btn", s[1] + "\uFE0E");
+      b.type = "button";
+      b.title = s[0] + " (" + s[2] + ")";
+      b.setAttribute("role", "radio");
+      b.setAttribute("aria-label", s[0]);
+      b.addEventListener("click", () => {
+        if (select.value === String(n)) return;
+        select.value = String(n);
+        store.set("horoSign", String(n));
+        flipSwap("horoCard", renderHoroscope);
+      });
+      grid.appendChild(b);
+    });
     const saved = Number(store.get("horoSign"));
     select.value = String(Number.isInteger(saved) && saved >= 0 && saved < SIGNS.length ? saved : 0);
-    select.addEventListener("change", () => { store.set("horoSign", select.value); renderHoroscope(); });
     renderHoroscope();
   }
 
@@ -333,9 +371,57 @@
     } else box.appendChild(tile("/daily", "Daily activities", "\u2014", na, "Open Daily Activities"));
   }
 
+  // ---------- Safety moment (from public/content/safety.txt) and Today's focus (from the data) ----------
+  async function initSafety() {
+    try {
+      const items = (await loadLines("safety")).map(parseItem);
+      if (!items.length) throw new Error("empty");
+      const item = items[dayNumber() % items.length];
+      $("safetyText").textContent = item.t;
+      $("safetyTopic").textContent = item.r ? "Topic: " + item.r : "";
+    } catch (e) {
+      $("safetyText").textContent = "Add safety reminders to public/content/safety.txt";
+    }
+  }
+
+  async function initFocus() {
+    const list = $("focusList");
+    const lines = [];
+    const [cable, scurve, daily] = await Promise.allSettled([
+      getJson("/api/data"), getJson("/api/scurve"), getJson("/api/daily")
+    ]);
+    if (cable.status === "fulfilled") {
+      const a = cable.value.areas.filter(x => x.latest !== null);
+      if (a.length) {
+        const low = a.reduce((m, x) => x.latest < m.latest ? x : m);
+        lines.push(["\uD83C\uDFAF", "Lowest progress: <b>" + low.section + " \u00B7 " + low.area + "</b> at " + pct0(low.latest)]);
+        const up = a.filter(x => typeof x.change === "number").reduce((m, x) => !m || x.change > m.change ? x : m, null);
+        if (up && up.change > 0) lines.push(["\uD83D\uDCC8", "Biggest gain this week: <b>" + up.section + " \u00B7 " + up.area + "</b> (+" + up.change.toFixed(1) + " pp)"]);
+      }
+    }
+    if (scurve.status === "fulfilled") {
+      const d = scurve.value, w = d.weeks[d.latestIndex];
+      lines.push(["\uD83D\uDCCA", "S-curve: <b>" + gapText(w.gapPP) + "</b>"]);
+    }
+    if (daily.status === "fulfilled" && daily.value.summary.hold > 0) {
+      lines.push(["\u23F8\uFE0F", "<b>" + daily.value.summary.hold + "</b> daily activities on hold. Worth a follow-up"]);
+    }
+    list.innerHTML = "";
+    if (!lines.length) { list.appendChild(el("li", "", "Data not available yet")); return; }
+    lines.forEach(l => {
+      const li = el("li");
+      li.appendChild(el("span", "focus-ic", l[0]));
+      const t = el("span"); t.innerHTML = l[1];
+      li.appendChild(t);
+      list.appendChild(li);
+    });
+  }
+
   initHero();
   initInspiration();
   initHoroscope();
   initCarousel();
   initGlance();
+  initSafety();
+  initFocus();
 })();

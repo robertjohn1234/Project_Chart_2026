@@ -1,0 +1,33 @@
+# Safety moments
+# One item per line. Lines starting with # and empty lines are ignored.
+# Format: text   or   text || topic     A different one is shown each day.
+Wear your hard hat, safety glasses and safety shoes before you step into the work area. || PPE
+Inspect your ladder before every climb: three points of contact, always. || Working at height
+Wearing a harness is not enough. Tie off to a secure anchor point every time. || Working at height
+Lock out and tag out before working on any energized equipment. Test before you touch. || Electrical safety
+Treat every cable as live until it is tested and proven dead. || Electrical safety
+Keep walkways clear. A tidy site is a safe site. || Housekeeping
+Report every near miss. It is a free lesson, so use it. || Reporting
+See something unsafe? Stop the work. Everyone has the right and the duty to stop it. || Stop work authority
+Lift with your legs, not your back. Ask for help with heavy loads. || Manual handling
+Never stand under a suspended load. || Lifting
+Check your tools before use. Damaged tools are not worth the risk. || Tools
+Stay hydrated. Drink water before you feel thirsty, especially in the heat. || Heat
+Take short breaks in the shade when it is hot. Heat stress can sneak up on you. || Heat
+Cable trays and trenches have sharp edges. Wear gloves and watch your hands. || Cable pulling
+When pulling cable, keep clear of the line and the pulling tension. Never stand in the bight. || Cable pulling
+Barricade open trenches and holes, and put up signs so nobody falls in. || Excavation
+Know where the nearest fire extinguisher and emergency exit are. || Emergency
+Keep a safe distance from moving vehicles and heavy equipment. Make eye contact with the operator. || Site traffic
+Do not take shortcuts with permits. No permit, no work. || Permit to work
+Do a toolbox talk before the job. Five minutes can prevent a bad day. || Toolbox talk
+Fatigue is a hazard. Get enough rest, and speak up when you are too tired to work safely. || Fatigue
+Keep both eyes on the task. Phones belong in your pocket while you work. || Focus
+Use the right tool for the job. Never improvise with a damaged or unsuitable one. || Tools
+Wear hearing protection near noisy machines. You only get one set of ears. || PPE
+Keep your work area lit and clear in the evening. Poor light hides hazards. || Housekeeping
+Sparks and welding work need a fire watch, and clear space around flammables. || Hot work
+Label and store materials properly. Falling rolls and drums hurt. || Storage
+Look out for each other. If a teammate looks unsure, ask and help. || Teamwork
+Before you leave for the day, check your area is safe and the tools are put away. || Housekeeping
+Safety is not a slogan. It is how we all go home to our families. || Our why

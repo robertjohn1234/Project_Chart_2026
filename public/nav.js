@@ -42,4 +42,13 @@
 
   const host = document.getElementById("site-header");
   if (host) host.innerHTML = html;
+
+  // Animations and extras (fx.css + fx.js). To turn everything off, delete these lines.
+  const fxCss = document.createElement("link");
+  fxCss.rel = "stylesheet";
+  fxCss.href = "/fx.css";
+  document.head.appendChild(fxCss);
+  const fxJs = document.createElement("script");
+  fxJs.src = "/fx.js";
+  document.head.appendChild(fxJs);
 })();
